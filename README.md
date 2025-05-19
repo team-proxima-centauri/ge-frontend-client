@@ -1,1 +1,1 @@
-frontend for GE
+frontend for GE client
