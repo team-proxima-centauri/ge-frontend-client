@@ -7,32 +7,23 @@ module.exports = {
   ],
   theme: {
     extend: {
+      boxShadow: {
+        'sidebar': '2px 0 15px 6px rgba(0, 0, 0, 0.2)',
+        'active': 'inset 0 0 15px 2px rgba(0, 0, 0, 0.3)',
+      },
       colors: {
-        'peach': {
-          50: '#FEF2F2',
-          100: '#FEE2E2',
-          200: '#FECACA',
-          300: '#FCA5A5',
-          400: '#F87171',
-          500: '#EF4444',
+        choco: {
+          bg: '#FFE9DA',
+          card: '#FFD0A1',
+          sidebar: '#FFD9CC',
+          selected: '#D9BAAF',
+          primary: '#000000',
+          redbtn: '#FB4747',
+          greenbtn: '#0B7D1C',
         },
-        'groceryease': {
-          background: '#FEE2E2',
-          card: '#FEF2F2',
-          accent: '#F87171',
-          button: '#10B981',
-          text: '#1F2937',
-          textLight: '#6B7280',
-        },
-      },
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        heading: ['Poppins', 'sans-serif'],
-      },
-      borderRadius: {
-        'xl': '1rem',
       },
     },
   },
   plugins: [],
-};
+}
+
