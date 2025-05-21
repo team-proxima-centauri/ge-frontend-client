@@ -5,7 +5,7 @@ import { useState } from "react";
 import { HomeIcon, PackageIcon, ShoppingCart, Award, Info, Filter, PanelLeft, User, Lock, Eye, EyeOff } from "lucide-react";
 import { Divider } from "@/components/Divider";
 import { RecommendationCard } from "@/components/reco";
-import { ProductCard } from "@/components/Product";
+import { ProductCard } from "@/components/DisplayCard";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);

@@ -16,6 +16,7 @@ module.exports = {
           bg: '#FFE9DA',
           card: '#FFD0A1',
           sidebar: '#FFD9CC',
+          chocobtn: '#915D26',
           selected: '#D9BAAF',
           primary: '#000000',
           redbtn: '#FB4747',

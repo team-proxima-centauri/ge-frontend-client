@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://192.168.254.104:5000/api'; // Ensure this matches your backend port
+const API_BASE_URL = 'http://127.0.0.1:5000/api'; // Ensure this matches your backend port
 
 // --- safeLocalStorage Utility --- 
 // Helper to safely access localStorage, avoiding errors during SSR or if localStorage is unavailable.

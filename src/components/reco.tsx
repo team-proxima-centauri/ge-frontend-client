@@ -26,7 +26,6 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   };
 
   return (
-    <div className="group relative">
       <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full">
         {/* Product Image */}
         <div className="relative w-full aspect-square overflow-hidden bg-gray-100"> 
@@ -84,7 +83,6 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
