@@ -1,10 +1,10 @@
 "use client";
 
+import { Header } from "@/components/Header";
+import { getCurrentUser, isAuthenticated, logout as apiLogout, User } from "@/services/api";
 import { useEffect, useState } from "react";
 import { LoginModal } from "@/components/LoginModal";
 import { useRouter } from "next/navigation"; 
-import { getCurrentUser, isAuthenticated, logout as apiLogout, User } from "@/services/api";
-import { Header } from "@/components/Header";
 
 interface CartItem {
   id: string;
@@ -15,7 +15,7 @@ interface CartItem {
   productDetails?: any;
 }
 
-const GroupOrderPage = () => {
+const clubPage = () => {
     const router = useRouter();
     const [currentUser, setCurrentUser] = useState<User | null>(getCurrentUser());
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -38,7 +38,6 @@ const GroupOrderPage = () => {
         setCurrentUser(loggedInUser);
         setShowLoginModal(false);
     };
-    
 
     const handleAddToCart = (product: any, quantity: number) => {
         setCartItems(prevItems => {
@@ -117,41 +116,42 @@ const GroupOrderPage = () => {
                 onSortChange={setSelectedSort}
                 onPriceRangeChange={setPriceRange}
             />
-            <div className="absolute w-[100vw] top-1/2 md:mt-8 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center px-6 py-10 text-center">
-            <h1 className="text-xl font-bold mb-6">Enter Group Order Code</h1>
+            <div className="absolute w-[100vw] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center px-6 py-10 text-center">
+                {/* Tailwind Card Component for React + TypeScript */}
+                <div
+                className="w-[90vw] md:w-[430px] rounded-[20px] bg-gradient-to-tr from-choco-brown from-30% via-choco-brown2 via-50% to-choco-brown to-70% p-[5px] overflow-hidden shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+                >
+                {/* Top Section */}
+                <div className="relative h-[150px] md:h-[200px] rounded-[15px] bg-gradient-to-r from-cyan-700 to-cyan-300 flex items-start justify-between px-4 pt-2">
+                    <h1 className="m-auto">Barcode here</h1>
+                </div>
 
-            {/* Input/Display Box for Entering Group Code */}
-            <input type="text" className="bg-gray-300 w-1/2 max-w-[300px] text-black text-center font-bold font-mono py-2 px-4 rounded-full mb-4" placeholder="1234QWER" />
-
-            <p className="text-sm text-black max-w-xs mb-10">
-                Ask your friend for the group code and enter it above to join!
-            </p>
-
-            <hr className="border-t border-gray-400 w-3/4 max-w-[400px] my-6" />
-
-            <p className="text-sm text-black max-w-xs mb-4">
-                Want your friends to join your Group Order?
-            </p>
-
-            {/* Code to share with friends */}
-            <div className="bg-choco-chocobtn w-1/2 max-w-[300px] text-white font-bold font-mono py-2 px-4 rounded-full mb-4">
-                QWER1234
-            </div>
-
-            <p className="text-sm text-black max-w-xs">
-                Send them this code to let them join your Group Order Cart
-            </p>
-
-            <hr className="border-t border-gray-400 w-3/4 max-w-[400px] my-6" />
+                {/* Bottom Section */}
+                <div className="mt-4 px-2 pb-4 text-center">
+                    <div className="text-white text-[17px] font-bold tracking-wider">VIP Club Member Card</div>
+                    
+                    <div className="mt-5 flex justify-between text-[rgba(170,222,243,0.721)] text-xs">
+                    <div className="flex-1 text-center">
+                        <div className="text-[13px] font-semibold">123/333</div>
+                        <div className="text-[10px]">Metric 1</div>
+                    </div>
+                    <div className="flex-1 border-l border-r border-[rgba(255,255,255,0.15)] text-center">
+                        <div className="text-[13px] font-semibold">456/666</div>
+                        <div className="text-[10px]">Metric 2</div>
+                    </div>
+                    <div className="flex-1 text-center">
+                        <div className="text-[13px] font-semibold">789/999</div>
+                        <div className="text-[10px]">Metric 3</div>
+                    </div>
+                    </div>
+                </div>
+                </div>
 
 
-            <p className="text-sm text-black max-w-xs mt-12 mb-8">
-                Done sharing your code? Click the button below to add products to your cart!
-            </p>
+                <div className="w-1/2 text-balance mt-4 px-2 py-8 text-center">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
 
-            <button onClick={() => router.push('/products')} className="bg-choco-greenbtn w-1/2 max-w-[300px] text-white font-bold font-mono py-2 px-4 rounded-full mb-4">
-                Add Products
-            </button>
             </div>
 
             {showLoginModal && (
@@ -164,5 +164,5 @@ const GroupOrderPage = () => {
     );
 };
 
-export default GroupOrderPage;
+export default clubPage;
 

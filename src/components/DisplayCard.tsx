@@ -50,7 +50,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
         className={`
           m-auto flex px-2 flex-col bg-white rounded-xl overflow-hidden shadow-sm 
           transition-all duration-300 
-          ${isMobile ? 'w-[85vw] aspect-[1/1.2]' : 'h-[16rem] w-[24rem]'}
+          ${isMobile ? 'w-[85vw] aspect-[1/1.2]' : 'h-[20rem] w-[24rem]'}
           ${isSelected ? 'ring-2 ring-choco-greenbtn' : ''}
           ${isMobile ? 'active:shadow-md' : 'hover:shadow-md'}
         `}

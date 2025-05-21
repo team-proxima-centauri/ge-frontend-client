@@ -242,12 +242,12 @@ export default function Home() {
         <div className="bg-choco-bg min-h-screen pb-10">
           {/* Seasonal Specials Section */}
           {products.length > 0 && (
-            <div className="px-6 pt-4">
-              <div className="bg-gradient-to-r from-choco-card to-choco-sidebar rounded-xl p-6 shadow-sm">
+            <div className="flex px-6 pt-4">
+              <div className="m-auto bg-gradient-to-r from-choco-card to-choco-brown/30 w-auto max-w-full rounded-xl p-6 shadow-sm">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Seasonal Specials</h2>
                 <p className="text-gray-600 mb-6">Discover our limited-time offers on seasonal products</p>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="flex flex-wrap md:flex-nowrap gap-2">
                   {products.slice(0, 2).map((product) => (
                     <RecommendationCard 
                       key={`special-${product.id}`} 

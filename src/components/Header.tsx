@@ -42,7 +42,7 @@ const NavMenu = [
   { id: 1, name: "Dashboard", href: "/", icon: HomeIcon },
   { id: 2, name: "Products", href: "/products", icon: PackageIcon },
   { id: 3, name: "Group Order", href: "/group-order", icon: ShoppingCart },
-  { id: 4, name: "Club Member", href: "#", icon: Award },
+  { id: 4, name: "Club Member", href: "/club", icon: Award },
   { id: 5, name: "About", href: "#", icon: Info },
 ];
 

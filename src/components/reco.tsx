@@ -26,7 +26,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   };
 
   return (
-      <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full">
+      <div className="m-auto flex flex-col bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full md:w-[48vw] max-w-[250px] aspect-[1/1.5]">
         {/* Product Image */}
         <div className="relative w-full aspect-square overflow-hidden bg-gray-100"> 
           {product.image_url ? (
