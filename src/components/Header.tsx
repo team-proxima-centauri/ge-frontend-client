@@ -149,23 +149,30 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="mt-auto pt-6 pb-4 px-4">
           <Divider />
           <div className="mt-4">
-            {currentUser ? (
-              <button 
-                onClick={onLogoutClick} 
-                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-white text-pink-500 border border-pink-500 rounded-lg hover:bg-pink-500 hover:text-white transition-colors font-medium"
-              >
-                <LogOut className="h-5 w-5" />
-                <span>{isClient ? 'Sign Out' : 'Loading...'}</span>
-              </button>
-            ) : (
-              <button 
-                onClick={onLoginClick} 
-                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors font-medium"
-              >
-                <LogIn className="h-5 w-5" />
-                <span>{isClient ? 'Sign In' : 'Loading...'}</span>
-              </button>
-            )}
+            {/* Always render both buttons but conditionally show/hide them based on client-side authentication */}
+            <button 
+              onClick={onLogoutClick} 
+              className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-white text-pink-500 border border-pink-500 rounded-lg hover:bg-pink-500 hover:text-white transition-colors font-medium ${isClient && currentUser ? 'block' : 'hidden'}`}
+            >
+              <LogOut className="h-5 w-5" />
+              <span>{isClient ? 'Sign Out' : 'Loading...'}</span>
+            </button>
+            
+            <button 
+              onClick={onLoginClick} 
+              className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors font-medium ${isClient && !currentUser ? 'block' : 'hidden'}`}
+            >
+              <LogIn className="h-5 w-5" />
+              <span>{isClient ? 'Sign In' : 'Loading...'}</span>
+            </button>
+            
+            {/* This placeholder button will only show during server-side rendering */}
+            <button 
+              className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-pink-500 text-white rounded-lg transition-colors font-medium ${isClient ? 'hidden' : 'block'}`}
+              disabled
+            >
+              <span>Loading...</span>
+            </button>
           </div>
         </div>
       </Sidebar>

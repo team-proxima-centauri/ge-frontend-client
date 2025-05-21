@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ShoppingCart, Users, Plus, Copy, Check } from 'lucide-react';
 import { Divider } from '@/components/Divider';
 import { CartItem, User } from '@/services/api';
+import { formatPrice, calculateTotal } from '@/utils/priceUtils';
 
 interface GroupCartProps {
   cartItems: CartItem[];
@@ -31,7 +32,7 @@ export const GroupCart: React.FC<GroupCartProps> = ({
   const [joinCode, setJoinCode] = useState('');
   const [codeCopied, setCodeCopied] = useState(false);
 
-  const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
+  const totalAmount = formatPrice(calculateTotal(cartItems));
   const itemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const copyCodeToClipboard = () => {
@@ -177,7 +178,7 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                           </div>
                           <div>
                             <p className="font-medium text-gray-800">{item.name}</p>
-                            <p className="text-sm text-gray-600">${item.price.toFixed(2)}</p>
+                            <p className="text-sm text-gray-600">${formatPrice(item.price)}</p>
                             {item.added_by && (
                               <p className="text-xs text-pink-600">
                                 Added by: {item.added_by === currentUser?.id ? 'You' : 

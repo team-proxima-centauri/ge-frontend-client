@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { login, User } from '../services/api'; 
-import { X } from 'lucide-react';
+import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 interface LoginModalProps {
   onLoginSuccess: (user: User) => void;
@@ -14,6 +14,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -40,7 +41,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-      <div className="bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-md relative">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md relative">
         <button 
           onClick={onClose} 
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition-colors"
@@ -48,47 +49,80 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
         >
           <X size={24} />
         </button>
-        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Login</h2>
-        <form onSubmit={handleSubmit}>
+        
+        {/* Header */}
+        <div className="text-center pt-8 pb-4 px-8">
+          <h2 className="text-3xl font-bold text-choco-primary mb-2">Welcome Back</h2>
+          <p className="text-gray-600">Sign in to your account</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6 px-8 pb-8">
           {error && <p className="text-red-500 text-sm mb-4 text-center p-2 bg-red-50 rounded-md">{error}</p>}
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-            <input 
-              type="email" 
-              id="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
+          
+          {/* Email Field */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Mail className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="email"
+              id="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               disabled={isLoading}
-              placeholder="you@example.com"
+              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-choco-primary focus:border-transparent transition-all"
             />
           </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
+
+          {/* Password Field */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               disabled={isLoading}
-              placeholder="••••••••"
+              className="w-full pl-10 pr-12 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-choco-primary focus:border-transparent transition-all"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-400" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-400" />
+              )}
+            </button>
           </div>
-          <button 
-            type="submit" 
-            className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-60 transition-opacity text-sm font-medium"
+
+          {/* Login Button */}
+          <button
+            type="submit"
             disabled={isLoading}
+            className="w-full bg-choco-primary text-white py-3 rounded-lg hover:bg-choco-primary/90 transition-colors font-semibold"
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
+          
+          {/* Sign Up Link */}
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-600">
+              Don&apos;t have an account?{' '}
+              <a href="/signup" className="text-choco-primary hover:text-choco-primary/80 transition-colors font-semibold">
+                Sign up
+              </a>
+            </p>
+          </div>
         </form>
-        {/* Optional: Add a link to the registration page if you have one */}
-        {/* <p className="mt-4 text-center text-sm text-gray-600">
-          Don\'t have an account? <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
-        </p> */}
       </div>
     </div>
   );

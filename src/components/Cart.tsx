@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import React, { useState } from 'react';
+import { CartItem } from '@/services/api';
+import { formatPrice, calculateTotal } from '@/utils/priceUtils';
 import { ShoppingCart } from 'lucide-react';
 import { Divider } from '@/components/Divider';
-import { CartItem } from '@/services/api';
+import Image from 'next/image';
 
 interface CartProps {
   cartItems: CartItem[];
@@ -21,7 +22,7 @@ export const Cart: React.FC<CartProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
+  const totalAmount = formatPrice(calculateTotal(cartItems));
   const itemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
@@ -85,7 +86,7 @@ export const Cart: React.FC<CartProps> = ({
                       </div>
                       <div>
                         <p className="font-medium text-gray-800">{item.name}</p>
-                        <p className="text-sm text-gray-600">${item.price.toFixed(2)}</p>
+                        <p className="text-sm text-gray-600">${formatPrice(item.price)}</p>
                         {isGroup && item.added_by && (
                           <p className="text-xs text-pink-600">Added by: {item.added_by}</p>
                         )}

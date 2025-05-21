@@ -1,5 +1,21 @@
 const API_BASE_URL = 'http://127.0.0.1:5000/api'; // Ensure this matches your backend port
 
+// Utility function to ensure price values are always properly processed as numbers
+// This handles the conversion from database values (including string representations) to proper JS numbers
+export const ensurePrice = (price: unknown): number => {
+  // Handle null or undefined
+  if (price === null || price === undefined) return 0;
+  
+  // If already a number, return it
+  if (typeof price === 'number') return price;
+  
+  // Convert string to number
+  const parsed = parseFloat(String(price).replace(/[^0-9.-]+/g, ''));
+  
+  // Return 0 if NaN, otherwise the parsed number
+  return isNaN(parsed) ? 0 : parsed;
+};
+
 // --- safeLocalStorage Utility --- 
 // Helper to safely access localStorage, avoiding errors during SSR or if localStorage is unavailable.
 const safeLocalStorage = {
@@ -173,6 +189,28 @@ export const isAuthenticated = (): boolean => {
 
 // --- Cart Interfaces & API ---
 
+// We define a type for raw cart data that might come from the API
+type RawCartData = {
+  id: string;
+  owner_id: string;
+  is_group: boolean;
+  group_code?: string;
+  status: string;
+  items: Array<{
+    id: string;
+    cart_id: string;
+    product_id: string;
+    quantity: number | string;
+    added_by: string;
+    name: string;
+    price: number | string;
+    image_url: string;
+    unit: string;
+  }>;
+  total: number | string;
+};
+
+// Processed cart item interface for use in the frontend
 export interface CartItem {
   id: string;
   cart_id: string;
@@ -180,7 +218,7 @@ export interface CartItem {
   quantity: number;
   added_by: string;
   name: string;
-  price: number;
+  price: number; // Ensured to be a number after processing
   image_url: string;
   unit: string;
 }
@@ -207,20 +245,47 @@ const authHeaders = (): Record<string, string> => {
 
 export const getMyCart = async (): Promise<Cart | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/carts/my`, {
+    // Check if user is authenticated
+    const token = getToken();
+    if (!token) {
+      console.error('No authentication token found');
+      return null;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/carts/my?nocreate=true`, {
       headers: {
         ...authHeaders(),
       },
       credentials: 'include',
     });
 
+    // If we get a 404, it means the user doesn't have a cart yet, which is fine
+    if (response.status === 404) {
+      return null;
+    }
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch cart. Status ${response.status}`);
+      console.error(`Failed to fetch cart. Status ${response.status}`);
+      return null;
     }
 
     const data = await response.json();
-    if (data.success) {
-      return data.data as Cart;
+    if (data.success && data.data) {
+      // Process the raw cart data to ensure price values are numbers
+      const rawCart = data.data as { id: string; owner_id: string; is_group: boolean; group_code?: string; status: string; items: Array<RawCartData['items'][0]>; total: number | string };
+      
+      // Create a properly processed cart with all prices as numbers
+      const processedCart: Cart = {
+        ...rawCart,
+        total: ensurePrice(rawCart.total || 0),
+        items: Array.isArray(rawCart.items) ? rawCart.items.map(item => ({
+          ...item,
+          price: ensurePrice(item.price),
+          quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
+        })) : []
+      };
+      
+      return processedCart;
     }
     return null;
   } catch (error) {
@@ -240,16 +305,29 @@ export const addItemToCart = async (
         'Content-Type': 'application/json',
         ...authHeaders(),
       },
-      body: JSON.stringify({ product_id: productId, quantity }),
       credentials: 'include',
+      body: JSON.stringify({
+        product_id: productId,
+        quantity,
+      }),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to add item. Status ${response.status}`);
+      throw new Error(`Failed to add item to cart. Status ${response.status}`);
     }
+
     const data = await response.json();
     if (data.success) {
-      return data.data as CartItem;
+      // Process the raw item to ensure price is a number
+      const rawItem = data.data as { id: string; cart_id: string; product_id: string; price: number | string; quantity: number | string; added_by: string; name: string; image_url: string; unit: string; [key: string]: unknown };
+      
+      const processedItem: CartItem = {
+        ...rawItem,
+        price: ensurePrice(rawItem.price),
+        quantity: typeof rawItem.quantity === 'string' ? parseInt(rawItem.quantity, 10) : rawItem.quantity
+      } as CartItem;
+      
+      return processedItem;
     }
     return null;
   } catch (error) {
@@ -269,16 +347,28 @@ export const updateCartItemQuantity = async (
         'Content-Type': 'application/json',
         ...authHeaders(),
       },
-      body: JSON.stringify({ quantity }),
       credentials: 'include',
+      body: JSON.stringify({
+        quantity,
+      }),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to update item. Status ${response.status}`);
+      throw new Error(`Failed to update cart item. Status ${response.status}`);
     }
+
     const data = await response.json();
     if (data.success) {
-      return data.data as CartItem;
+      // Process the raw item to ensure price is a number
+      const rawItem = data.data as { id: string; cart_id: string; product_id: string; price: number | string; quantity: number | string; added_by: string; name: string; image_url: string; unit: string; [key: string]: unknown };
+      
+      const processedItem: CartItem = {
+        ...rawItem,
+        price: ensurePrice(rawItem.price),
+        quantity: typeof rawItem.quantity === 'string' ? parseInt(rawItem.quantity, 10) : rawItem.quantity
+      } as CartItem;
+      
+      return processedItem;
     }
     return null;
   } catch (error) {
@@ -400,17 +490,51 @@ export const getGroupCart = async (cartId: string): Promise<GroupCart | null> =>
 // Get group cart by code
 export const getGroupCartByCode = async (groupCode: string): Promise<GroupCart | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/carts/group/code/${groupCode}`, {
-      headers: authHeaders(),
+    if (!groupCode || groupCode.trim() === '') {
+      console.error('Invalid group code provided');
+      return null;
+    }
+
+    // Make sure we have authentication
+    const token = getToken();
+    if (!token) {
+      console.error('No authentication token found');
+      return null;
+    }
+
+    // Ensure proper headers and credentials
+    const response = await fetch(`${API_BASE_URL}/carts/group/code/${groupCode.trim()}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders()
+      },
       credentials: 'include',
     });
 
+    // Handle non-200 responses
     if (!response.ok) {
-      throw new Error(`Failed to fetch group cart by code. Status ${response.status}`);
+      console.error(`Failed to fetch group cart by code. Status ${response.status}`);
+      return null; // Return null instead of throwing to prevent unhandled promise rejection
     }
+    
     const data = await response.json();
-    if (data.success) {
-      return data.data as GroupCart;
+    if (data.success && data.data) {
+      // Process the raw cart data to ensure prices are numbers
+      const rawCart = data.data as RawCartData;
+      
+      // Process the items to ensure price values are numbers
+      const processedCart = {
+        ...rawCart,
+        total: ensurePrice(rawCart.total || 0),
+        items: Array.isArray(rawCart.items) ? rawCart.items.map(item => ({
+          ...item,
+          price: ensurePrice(item.price),
+          quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
+        })) : []
+      };
+      
+      return processedCart as unknown as GroupCart;
     }
     return null;
   } catch (error) {

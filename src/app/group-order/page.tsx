@@ -17,6 +17,7 @@ import {
   GroupCartMember,
   leaveGroupCart
 } from "@/services/api";
+import { formatPrice, calculateTotal } from "@/utils/priceUtils";
 import { Header } from "@/components/Header";
 
 // Extend the API CartItem with additional properties needed for the UI
@@ -43,6 +44,7 @@ const GroupOrderPage = () => {
     const [priceRange, setPriceRange] = useState({ min: 0, max: 100 });
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [groupCode, setGroupCode] = useState<string>('');
+    const [newGroupCode, setNewGroupCode] = useState<string>('');
     const [groupCartState, setGroupCartState] = useState<GroupCartState | null>(null);
     const [isJoiningGroup, setIsJoiningGroup] = useState(false);
     const [isCreatingGroup, setIsCreatingGroup] = useState(false);
@@ -111,8 +113,14 @@ const GroupOrderPage = () => {
             if (currentUser) {
                 setLoadingCart(true);
                 try {
+                    // Only check for existing cart, don't create a new one
                     const cart = await getMyCart();
+                    
+                    // Initialize with empty cart items by default
+                    setCartItems([]);
+                    
                     if (cart) {
+                        // Only set cart items if a cart actually exists
                         setCartItems(cart.items.map(item => ({
                             ...item,
                             isSelected: false
@@ -126,45 +134,49 @@ const GroupOrderPage = () => {
                                 setGroupCartState({
                                     id: groupCart.id,
                                     group_code: groupCart.group_code,
-                                    members: groupCart.members,
+                                    members: groupCart.members || [],
                                     status: groupCart.status,
                                     owner_id: groupCart.owner_id
                                 });
                             }
                         }
+                    } else {
+                        // No cart exists yet, which is fine - we'll create one when needed
+                        console.log('No cart exists yet');
                     }
                 } catch (error) {
                     console.error('Error loading cart:', error);
-                    setErrorMessage('Failed to load your cart');
+                    // Don't show error message for missing cart - that's expected
+                    if (error && typeof error === 'object' && 'message' in error && 
+                        typeof error.message === 'string' && !error.message.includes('404')) {
+                        setErrorMessage('Failed to load your cart');
+                    }
                 } finally {
                     setLoadingCart(false);
                 }
             }
         };
+        
         loadUserCart();
     }, [currentUser]);
     
-    // Leave a group cart
+    // Handle leaving the group cart
     const handleLeaveGroupCart = async () => {
         if (!currentUser) {
             setShowLoginModal(true);
             return;
         }
-
-        if (!groupCartState) {
-            setErrorMessage('Not in a group cart');
-            return;
-        }
-
+        
+        setLoadingCart(true);
+        setErrorMessage(null);
+        
         try {
-            setLoadingCart(true);
             const success = await leaveGroupCart();
             if (success) {
-                // Reset the state
-                setGroupCartState(null);
                 setGroupCode('');
+                setGroupCartState(null);
                 
-                // Reload the user's individual cart
+                // Refresh cart items
                 const myCart = await getMyCart();
                 if (myCart) {
                     setCartItems(myCart.items.map(item => ({
@@ -174,8 +186,6 @@ const GroupOrderPage = () => {
                 } else {
                     setCartItems([]);
                 }
-                
-                setErrorMessage(null);
             } else {
                 setErrorMessage('Failed to leave group cart');
             }
@@ -186,7 +196,7 @@ const GroupOrderPage = () => {
             setLoadingCart(false);
         }
     };
-
+    
     // Create a new group cart using the API
     const handleCreateGroup = async () => {
         if (!currentUser) {
@@ -204,20 +214,88 @@ const GroupOrderPage = () => {
                 setGroupCartState({
                     id: groupCart.id,
                     group_code: groupCart.group_code,
-                    members: groupCart.members,
+                    members: groupCart.members || [],
                     status: groupCart.status,
                     owner_id: groupCart.owner_id
                 });
-                setCartItems(groupCart.items.map(item => ({
-                    ...item,
-                    isSelected: false
-                })));
+                
+                // Refresh cart items
+                const myCart = await getMyCart();
+                if (myCart) {
+                    setCartItems(myCart.items.map(item => ({
+                        ...item,
+                        isSelected: false
+                    })));
+                } else {
+                    // If no cart exists yet, initialize with empty items
+                    setCartItems([]);
+                }
+            } else {
+                setErrorMessage('Failed to create group cart');
             }
         } catch (error) {
             console.error('Error creating group cart:', error);
             setErrorMessage('Failed to create group cart');
         } finally {
             setIsCreatingGroup(false);
+        }
+    };
+    
+    // Handle leaving current group and joining a new one
+    const handleLeaveAndJoinNewGroup = async (newCode: string) => {
+        if (!currentUser) {
+            setShowLoginModal(true);
+            return;
+        }
+        
+        if (newCode.length !== 6) {
+            setErrorMessage('Invalid group code. Please enter a valid 6-character code.');
+            return;
+        }
+        
+        setLoadingCart(true);
+        setErrorMessage(null);
+        
+        try {
+            // First leave the current group cart
+            const leftCart = await leaveGroupCart();
+            if (leftCart) {
+                // Then join the new group cart
+                const groupCart = await joinGroupCart(newCode);
+                if (groupCart) {
+                    setGroupCode(groupCart.group_code);
+                    setGroupCartState({
+                        id: groupCart.id,
+                        group_code: groupCart.group_code,
+                        members: groupCart.members || [],
+                        status: groupCart.status,
+                        owner_id: groupCart.owner_id
+                    });
+                    
+                    // Clear the new group code input
+                    setNewGroupCode('');
+                    
+                    // Refresh cart items
+                    const myCart = await getMyCart();
+                    if (myCart) {
+                        setCartItems(myCart.items.map(item => ({
+                            ...item,
+                            isSelected: false
+                        })));
+                    } else {
+                        setCartItems([]);
+                    }
+                } else {
+                    setErrorMessage('Failed to join the new group cart');
+                }
+            } else {
+                setErrorMessage('Failed to leave current group cart');
+            }
+        } catch (error) {
+            console.error('Error switching group carts:', error);
+            setErrorMessage('Failed to switch group carts');
+        } finally {
+            setLoadingCart(false);
         }
     };
     
@@ -319,13 +397,55 @@ const GroupOrderPage = () => {
                                                     {member.name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <span className="text-gray-800">
-                                                    {member.name}
-                                                    {member.user_id === currentUser?.id && ' (You)'}
-                                                    {member.role === 'admin' && ' (Admin)'}
+                                                    {member.name} {member.user_id === currentUser?.id ? '(You)' : ''}
+                                                    {member.user_id === groupCartState.owner_id && ' (Owner)'}
                                                 </span>
                                             </li>
                                         ))}
                                     </ul>
+                                </div>
+                                
+                                {/* Join another group section */}
+                                <div className="mt-6 pt-4 border-t border-pink-200">
+                                    <details className="text-gray-700">
+                                        <summary className="cursor-pointer font-medium hover:text-pink-600 transition-colors">
+                                            Join a different group
+                                        </summary>
+                                        <div className="mt-3 pl-2">
+                                            <p className="text-sm text-gray-600 mb-2">
+                                                You&apos;ll need to leave your current group first before joining another one.
+                                            </p>
+                                            <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Enter new group code" 
+                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500 mb-2 sm:mb-0"
+                                                    maxLength={6}
+                                                    onChange={(e) => {
+                                                        // Only update the newGroupCode state, not the current groupCode
+                                                        setNewGroupCode(e.target.value.toUpperCase());
+                                                        // Clear any error messages when typing
+                                                        if (errorMessage) setErrorMessage(null);
+                                                    }}
+                                                    value={newGroupCode}
+                                                    disabled={isJoiningGroup || loadingCart}
+                                                />
+                                                <button 
+                                                    onClick={() => {
+                                                        if (newGroupCode.length !== 6) {
+                                                            setErrorMessage('Please enter a valid 6-character group code');
+                                                            return;
+                                                        }
+                                                        handleLeaveAndJoinNewGroup(newGroupCode);
+                                                    }}
+                                                    className="bg-white text-pink-600 px-4 py-2 rounded-md border border-pink-500 hover:bg-pink-50 transition-colors"
+                                                    disabled={loadingCart || newGroupCode.length !== 6}
+                                                >
+                                                    {loadingCart ? 'Processing...' : 'Leave & Join New Group'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </details>
                                 </div>
                                 
                                 <div className="mt-6 border-t border-pink-100 pt-4">
@@ -357,8 +477,14 @@ const GroupOrderPage = () => {
                                             placeholder="Enter group code" 
                                             className="w-full p-2 sm:p-3 border border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500 mb-2 sm:mb-0"
                                             maxLength={6}
-                                            onChange={(e) => setGroupCode(e.target.value.toUpperCase())}
+                                            onChange={(e) => {
+                                                // Only update the state, don't trigger any API calls here
+                                                setGroupCode(e.target.value.toUpperCase());
+                                                // Clear any error messages when typing
+                                                if (errorMessage) setErrorMessage(null);
+                                            }}
                                             value={groupCode}
+                                            disabled={isJoiningGroup}
                                         />
                                         <button 
                                             onClick={() => handleJoinGroup(groupCode)}
@@ -436,7 +562,7 @@ const GroupOrderPage = () => {
                                                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-pink-50 rounded mr-2 sm:mr-3 flex-shrink-0"></div>
                                                 <div>
                                                     <p className="font-medium text-gray-800">{item.name}</p>
-                                                    <p className="text-sm text-pink-700">${item.price.toFixed(2)}</p>
+                                                    <p className="text-sm text-pink-700">${formatPrice(item.price)}</p>
                                                     {groupCode && item.added_by && (
                                                         <p className="text-xs text-pink-600">
                                                             Added by: {item.added_by === currentUser?.id ? 'You' : 
@@ -472,7 +598,7 @@ const GroupOrderPage = () => {
                                     <div className="flex justify-between items-center mb-4">
                                         <span className="font-medium text-gray-700">Total:</span>
                                         <span className="font-bold text-lg text-pink-700">
-                                            ${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
+                                            ${formatPrice(calculateTotal(cartItems))}
                                         </span>
                                     </div>
                                     <button

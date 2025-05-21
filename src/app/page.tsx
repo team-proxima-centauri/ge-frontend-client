@@ -5,25 +5,24 @@ import { RecommendationCard } from "@/components/reco";
 import { DisplayCard } from "@/components/DisplayCard";
 import { LoginModal } from '@/components/LoginModal';
 import { Header } from '@/components/Header';
-import { ArrowUpDown } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import {
   getProducts,
+  getMyCart,
+  addItemToCart,
   Product, 
   User, 
+  CartItem as ApiCartItem,
   getCurrentUser, 
   isAuthenticated, 
   logout as apiLogout 
 } from '@/services/api';
 import useEmblaCarousel from 'embla-carousel-react';
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
+// We'll use the API CartItem type directly and extend it with our local properties
+interface LocalCartItem extends ApiCartItem {
   isSelected: boolean;
-  productDetails?: Product; 
+  productDetails?: Product;
 }
 
 interface Category {
@@ -45,7 +44,7 @@ const productCategories: Category[] = [
 ];
 
 export default function Home() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<LocalCartItem[]>([]);
   const router = useRouter();
   
   // Filter state
@@ -106,6 +105,32 @@ export default function Home() {
   const scrollRecentlyPurchasedPrev = useCallback(() => recentlyPurchasedEmblaApi?.scrollPrev(), [recentlyPurchasedEmblaApi]);
   const scrollRecentlyPurchasedNext = useCallback(() => recentlyPurchasedEmblaApi?.scrollNext(), [recentlyPurchasedEmblaApi]);
 
+  // Function to fetch cart data from API
+  const fetchCartData = useCallback(async () => {
+    if (isAuthenticated()) {
+      try {
+        const cart = await getMyCart();
+        if (cart && cart.items) {
+          // Convert API cart items to local CartItem format
+          const cartItemsFromApi = cart.items.map(item => ({
+            ...item, // Spread all API CartItem properties
+            isSelected: false,
+            productDetails: {
+              id: item.product_id,
+              name: item.name,
+              price: item.price,
+              image_url: item.image_url,
+              unit: item.unit
+            } as Product
+          }));
+          setCartItems(cartItemsFromApi);
+        }
+      } catch (error) {
+        console.error('Error fetching cart data:', error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -125,7 +150,9 @@ export default function Home() {
       }
     };
     fetchProducts();
-  }, []);
+    // Also fetch cart data
+    fetchCartData();
+  }, [fetchCartData]);
 
   useEffect(() => {
     setIsAuthLoading(true);
@@ -135,6 +162,13 @@ export default function Home() {
     }
     setIsAuthLoading(false);
   }, []);
+  
+  // Re-fetch cart data when authentication state changes
+  useEffect(() => {
+    if (currentUser) {
+      fetchCartData();
+    }
+  }, [currentUser, fetchCartData]);
 
   const handleLoginClick = () => {
     setShowLoginModal(true);
@@ -150,44 +184,37 @@ export default function Home() {
     setShowLoginModal(false);
   };
 
-  const toggleItemSelection = (itemId: string) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === itemId ? { ...item, isSelected: !item.isSelected } : item
-      )
-    );
-  };
+  // This function is not currently used by the Header component, but kept for future functionality
+  // It's intentionally not removed to maintain code consistency with other components
 
-  const updateQuantity = (itemId: string, newQuantity: number) => {
+  const updateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity >= 1) {
+      // Update local state immediately for better UX
       setCartItems(items =>
         items.map(item =>
           item.id === itemId ? { ...item, quantity: newQuantity } : item
         )
       );
+      
+      // After updating the quantity on the backend, refresh cart data
+      // This ensures our local state is in sync with the backend
+      await fetchCartData();
     }
   };
 
-  const handleAddToCart = (product: Product, quantity: number) => {
-    setCartItems(prevItems => {
-      const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
-      if (existingItemIndex >= 0) {
-        return prevItems.map((item, index) =>
-          index === existingItemIndex
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevItems, {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          quantity,
-          isSelected: false,
-          productDetails: product
-        }];
-      }
-    });
+  const handleAddToCart = async (product: Product, quantity: number) => {
+    try {
+      // Use the product and quantity parameters to add the item to the cart using the API
+      await addItemToCart(product.id, quantity);
+      
+      // After adding to the cart, refresh cart data from the API
+      // This ensures our local state is in sync with the backend
+      await fetchCartData();
+      
+      console.log(`Added product ${product.name} (${quantity} units) to cart`);
+    } catch (error) {
+      console.error(`Error adding ${product.name} to cart:`, error);
+    }
   };
 
   const handleCheckout = () => {
@@ -214,9 +241,7 @@ export default function Home() {
         cartItems={cartItems}
         onLoginClick={handleLoginClick}
         onLogoutClick={handleLogoutClick}
-        onAddToCart={handleAddToCart}
         onCheckout={handleCheckout}
-        onToggleItemSelection={toggleItemSelection}
         onUpdateQuantity={updateQuantity}
         onApplyFilters={() => {
           // Apply filters logic here
