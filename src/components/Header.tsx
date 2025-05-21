@@ -1,30 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from "@/components/Sidebar";
 import { HomeIcon, PackageIcon, ShoppingCart, Award, Info, Filter, PanelLeft, LogIn, LogOut, ArrowUpDown } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { Divider } from "@/components/Divider";
+import { Cart } from "@/components/Cart";
 import { usePathname } from 'next/navigation';
-import { User, isAuthenticated, getCurrentUser, logout as apiLogout } from '@/services/api';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  isSelected: boolean;
-  productDetails?: any;
-}
+import { User, CartItem } from '@/services/api';
 
 interface HeaderProps {
   currentUser: User | null;
   cartItems: CartItem[];
   onLoginClick: () => void;
   onLogoutClick: () => void;
-  onAddToCart: (product: any, quantity: number) => void;
   onCheckout: () => void;
-  onToggleItemSelection: (itemId: string) => void;
   onUpdateQuantity: (itemId: string, newQuantity: number) => void;
   onApplyFilters: () => void;
   onResetFilters: () => void;
@@ -68,13 +58,12 @@ const sortOptions = [
 ];
 
 export const Header: React.FC<HeaderProps> = ({
+  // Define all props here to avoid hydration mismatches
   currentUser,
   cartItems,
   onLoginClick,
   onLogoutClick,
-  onAddToCart,
   onCheckout,
-  onToggleItemSelection,
   onUpdateQuantity,
   onApplyFilters,
   onResetFilters,
@@ -88,9 +77,18 @@ export const Header: React.FC<HeaderProps> = ({
   onPriceRangeChange,
 }) => {
   const pathname = usePathname();   
+  // Client-side state that won't affect server rendering
   const [leftOpen, setLeftOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  // Cart is now handled by the Cart component
+  
+  // State to track if we're on client-side to avoid hydration issues
+  const [isClient, setIsClient] = useState(false);
+  
+  // Set isClient to true after component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <>
@@ -114,14 +112,15 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center p-4 bg-white/50 rounded-lg shadow-sm">
             <Avatar 
               size="lg" 
-              name={currentUser ? currentUser.name : 'Guest'} 
+              name={isClient ? (currentUser ? currentUser.name : 'Guest') : 'Guest'} 
             />
+            
             <div className="ml-4 flex-1 min-w-0">
               <h2 className="text-lg font-semibold text-gray-800 capitalize truncate">
-                {currentUser ? currentUser.name : 'Guest User'}
+                {isClient ? (currentUser ? currentUser.name : 'Guest User') : 'Guest User'}
               </h2>
               <p className="text-sm text-gray-500 truncate">
-                {currentUser ? currentUser.email : 'Sign in to your account'}
+                {isClient ? (currentUser ? currentUser.email : 'Sign in to your account') : 'Sign in to your account'}
               </p>
             </div>
           </div>
@@ -153,18 +152,18 @@ export const Header: React.FC<HeaderProps> = ({
             {currentUser ? (
               <button 
                 onClick={onLogoutClick} 
-                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-white text-choco-redbtn border border-choco-redbtn rounded-lg hover:bg-choco-redbtn hover:text-white transition-colors font-medium"
+                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-white text-pink-500 border border-pink-500 rounded-lg hover:bg-pink-500 hover:text-white transition-colors font-medium"
               >
                 <LogOut className="h-5 w-5" />
-                <span>Sign Out</span>
+                <span>{isClient ? 'Sign Out' : 'Loading...'}</span>
               </button>
             ) : (
               <button 
                 onClick={onLoginClick} 
-                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-choco-greenbtn text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors font-medium"
               >
                 <LogIn className="h-5 w-5" />
-                <span>Sign In</span>
+                <span>{isClient ? 'Sign In' : 'Loading...'}</span>
               </button>
             )}
           </div>
@@ -304,59 +303,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </Sidebar>
 
-      {/* Cart Sidebar */}
-      <Sidebar side="right" isOpen={cartOpen} toggleSidebar={() => setCartOpen(!cartOpen)}>
-        <div className="flex justify-between items-center p-4">
-          <h1 className="text-xl font-semibold">My Cart</h1>
-          <button
-            onClick={() => setCartOpen(!cartOpen)}
-            className="p-2 text-black rounded-full transition-all duration-300"
-            aria-label="Toggle Cart Sidebar"
-          >
-            <ShoppingCart className="h-6 w-6" />
-          </button>
-        </div>
-        <Divider />
-        <div className="p-4 flex flex-col h-[calc(100%-140px)]"> 
-          {cartItems.length === 0 ? (
-            <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
-          ) : (
-            <ul className="space-y-2 overflow-y-auto flex-grow">
-              {cartItems.map((item) => (
-                <li key={item.id} className="flex items-center justify-between p-2 border-b">
-                  <div className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      checked={item.isSelected} 
-                      onChange={() => onToggleItemSelection(item.id)} 
-                      className="mr-2 h-4 w-4 accent-indigo-600"
-                    />
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-gray-500">${item.price.toFixed(2)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="px-2 py-1 border rounded-l">-</button>
-                    <span className="px-3 py-1 border-t border-b">{item.quantity}</span>
-                    <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="px-2 py-1 border rounded-r">+</button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        {cartItems.length > 0 && (
-          <div className="p-4 border-t">
-            <button 
-              onClick={onCheckout}
-              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Proceed to Checkout
-            </button>
-          </div>
-        )}
-      </Sidebar>
+      {/* Cart is now a standalone component */}
 
       {/* Main Header */}
       <div className="sticky top-0 z-40 flex justify-between items-center p-4 bg-white shadow-md">
@@ -367,7 +314,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <PanelLeft className="h-6 w-6" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-800">Chocomart</h1>
+        <h1 className="text-2xl font-bold text-gray-800">GroceryEase</h1>
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setFilterOpen(!filterOpen)}
@@ -376,18 +323,13 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Filter className="h-6 w-6" />
           </button>
-          <button 
-            onClick={() => setCartOpen(!cartOpen)} 
-            className={`p-2 text-black rounded-full transition-all duration-300 relative ${pathname === "/group-order" ? "hidden" : ""}`}
-            aria-label="Toggle Cart Sidebar"
-          >
-            <ShoppingCart className="h-6 w-6" />
-            {cartItems.reduce((acc, item) => acc + item.quantity, 0) > 0 && (
-              <span className="absolute top-0 right-0 block h-4 w-4 rounded-full ring-2 ring-white bg-red-500 text-xs text-white text-center">
-                {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-              </span>
-            )}
-          </button>
+          {/* Use the new Cart component - shown on all pages */}
+          <Cart 
+            cartItems={cartItems}
+            onUpdateQuantity={onUpdateQuantity}
+            onCheckout={onCheckout}
+            isGroup={pathname === "/group-order"}
+          />
         </div>
       </div>
     </>

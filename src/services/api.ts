@@ -170,3 +170,281 @@ export const isAuthenticated = (): boolean => {
   // Basic check, real validation might involve checking token expiry or with backend
   return !!token;
 };
+
+// --- Cart Interfaces & API ---
+
+export interface CartItem {
+  id: string;
+  cart_id: string;
+  product_id: string;
+  quantity: number;
+  added_by: string;
+  name: string;
+  price: number;
+  image_url: string;
+  unit: string;
+}
+
+export interface Cart {
+  id: string;
+  owner_id: string;
+  is_group: boolean;
+  group_code?: string;
+  status: string;
+  items: CartItem[];
+  total: number;
+}
+
+// Helper to build auth headers
+const authHeaders = (): Record<string, string> => {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+};
+
+export const getMyCart = async (): Promise<Cart | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/my`, {
+      headers: {
+        ...authHeaders(),
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch cart. Status ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (data.success) {
+      return data.data as Cart;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    return null;
+  }
+};
+
+export const addItemToCart = async (
+  productId: string,
+  quantity = 1
+): Promise<CartItem | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/items`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      body: JSON.stringify({ product_id: productId, quantity }),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add item. Status ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success) {
+      return data.data as CartItem;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error adding item to cart:', error);
+    return null;
+  }
+};
+
+export const updateCartItemQuantity = async (
+  itemId: string,
+  quantity: number
+): Promise<CartItem | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/items/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      body: JSON.stringify({ quantity }),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update item. Status ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success) {
+      return data.data as CartItem;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error updating cart item:', error);
+    return null;
+  }
+};
+
+export const removeCartItem = async (itemId: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/items/${itemId}`, {
+      method: 'DELETE',
+      headers: authHeaders(),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to remove item. Status ${response.status}`);
+    }
+    const data = await response.json();
+    return data.success;
+  } catch (error) {
+    console.error('Error removing cart item:', error);
+    return false;
+  }
+};
+
+// --- Group Cart API ---
+
+export interface GroupCartMember {
+  user_id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'member';
+  joined_at: string;
+  added_by: string;
+}
+
+export interface GroupCart extends Cart {
+  group_code: string;
+  members: GroupCartMember[];
+}
+
+// Create a new group cart
+export const createGroupCart = async (): Promise<GroupCart | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/group`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to create group cart. Status ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success) {
+      return data.data as GroupCart;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error creating group cart:', error);
+    return null;
+  }
+};
+
+// Join an existing group cart with a code
+export const joinGroupCart = async (groupCode: string): Promise<GroupCart | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/group/join`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      body: JSON.stringify({ group_code: groupCode }),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to join group cart. Status ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success) {
+      return data.data as GroupCart;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error joining group cart:', error);
+    return null;
+  }
+};
+
+// Get group cart details by id
+export const getGroupCart = async (cartId: string): Promise<GroupCart | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/group/${cartId}`, {
+      headers: authHeaders(),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch group cart. Status ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success) {
+      return data.data as GroupCart;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching group cart:', error);
+    return null;
+  }
+};
+
+// Get group cart by code
+export const getGroupCartByCode = async (groupCode: string): Promise<GroupCart | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/carts/group/code/${groupCode}`, {
+      headers: authHeaders(),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch group cart by code. Status ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success) {
+      return data.data as GroupCart;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching group cart by code:', error);
+    return null;
+  }
+};
+
+// Leave a group cart (members) or close it (owner)
+export const leaveGroupCart = async (): Promise<boolean> => {
+  try {
+    const token = getToken();
+    if (!token) {
+      console.error('No token found');
+      return false;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/carts/group/leave`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to leave group cart. Status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.success;
+  } catch (error) {
+    console.error('Error leaving group cart:', error);
+    return false;
+  }
+};
