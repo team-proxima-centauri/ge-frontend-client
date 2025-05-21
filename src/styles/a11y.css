@@ -1,0 +1,150 @@
+/* ===== ACCESSIBILITY, ICONOGRAPHY & MOTION ===== */
+
+:root {
+  /* Icon Sizes */
+  --icon-xs: 0.75rem;  /* 12px */
+  --icon-sm: 1rem;     /* 16px */
+  --icon-md: 1.5rem;   /* 24px */
+  --icon-lg: 2rem;     /* 32px */
+  --icon-xl: 3rem;     /* 48px */
+  
+  /* Icon Colors */
+  --icon-color-primary: var(--color-primary);
+  --icon-color-secondary: var(--color-text-secondary);
+  --icon-color-light: var(--color-secondary);
+  --icon-color-accent: var(--color-accent-2);
+  
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-medium: 300ms;
+  --transition-slow: 500ms;
+  
+  /* Easing Functions */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Focus Styles */
+  --focus-ring-color: rgba(93, 64, 55, 0.5);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+  
+  /* Z-index Layers */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
+
+/* Standardized Focus Styles */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
+}
+
+/* Skip Link for Keyboard Users */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px;
+  z-index: var(--z-index-tooltip);
+  transition: top var(--transition-medium) var(--ease-out);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Respect User's Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-medium: 0ms;
+    --transition-slow: 0ms;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Utility Classes for Animations */
+.animate-fade-in {
+  animation: fadeIn var(--transition-medium) var(--ease-out) forwards;
+}
+
+.animate-slide-up {
+  animation: slideInUp var(--transition-medium) var(--ease-out) forwards;
+}
+
+.animate-pulse {
+  animation: pulse var(--transition-slow) var(--ease-in-out) infinite;
+}
+
+.animate-spin {
+  animation: spin var(--transition-slow) linear infinite;
+}
+
+/* Icon Wrapper Classes */
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-xs { width: var(--icon-xs); height: var(--icon-xs); }
+.icon-sm { width: var(--icon-sm); height: var(--icon-sm); }
+.icon-md { width: var(--icon-md); height: var(--icon-md); }
+.icon-lg { width: var(--icon-lg); height: var(--icon-lg); }
+.icon-xl { width: var(--icon-xl); height: var(--icon-xl); }
+
+/* Visually Hidden (for screen readers) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

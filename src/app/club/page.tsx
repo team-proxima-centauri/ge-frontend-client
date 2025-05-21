@@ -1,10 +1,9 @@
 "use client";
 
 import { Header } from "@/components/Header";
-import { getCurrentUser, isAuthenticated, logout as apiLogout, User } from "@/services/api";
-import { useEffect, useState } from "react";
+import { getCurrentUser, logout as apiLogout, User, CartItem as ApiCartItem } from "@/services/api";
+import { useState } from "react";
 import { LoginModal } from "@/components/LoginModal";
-import { useRouter } from "next/navigation"; 
 
 interface CartItem {
   id: string;
@@ -12,11 +11,21 @@ interface CartItem {
   price: number;
   quantity: number;
   isSelected: boolean;
-  productDetails?: any;
+  productDetails?: {
+    id: string;
+    name: string;
+    price: number;
+    image_url?: string;
+  };
+  cart_id?: string;
+  product_id?: string;
+  added_by?: string;
+  image_url?: string;
+  unit?: string;
 }
 
-const clubPage = () => {
-    const router = useRouter();
+const ClubPage = () => {
+    // No router needed for now
     const [currentUser, setCurrentUser] = useState<User | null>(getCurrentUser());
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [showFilters, setShowFilters] = useState(false);
@@ -39,27 +48,7 @@ const clubPage = () => {
         setShowLoginModal(false);
     };
 
-    const handleAddToCart = (product: any, quantity: number) => {
-        setCartItems(prevItems => {
-            const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
-            if (existingItemIndex >= 0) {
-                return prevItems.map((item, index) =>
-                    index === existingItemIndex
-                        ? { ...item, quantity: item.quantity + quantity }
-                        : item
-                );
-            } else {
-                return [...prevItems, {
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    quantity,
-                    isSelected: false,
-                    productDetails: product
-                }];
-            }
-        });
-    };
+    
 
     const handleCheckout = () => {
         if (!currentUser) {
@@ -70,13 +59,7 @@ const clubPage = () => {
         }
     };
 
-    const toggleItemSelection = (itemId: string) => {
-        setCartItems(items =>
-            items.map(item =>
-                item.id === itemId ? { ...item, isSelected: !item.isSelected } : item
-            )
-        );
-    };
+    
 
     const updateQuantity = (itemId: string, newQuantity: number) => {
         if (newQuantity >= 1) {
@@ -89,15 +72,13 @@ const clubPage = () => {
     };
 
     return (
-        <div>
+        <div className="min-h-screen bg-groceryease-bg">
             <Header 
                 currentUser={currentUser}
-                cartItems={cartItems}
+                cartItems={cartItems as unknown as ApiCartItem[]}
                 onLoginClick={handleLoginClick}
                 onLogoutClick={handleLogoutClick}
-                onAddToCart={handleAddToCart}
                 onCheckout={handleCheckout}
-                onToggleItemSelection={toggleItemSelection}
                 onUpdateQuantity={updateQuantity}
                 onApplyFilters={() => {
                     // Apply filters logic here
@@ -119,10 +100,10 @@ const clubPage = () => {
             <div className="absolute w-[100vw] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center px-6 py-10 text-center">
                 {/* Tailwind Card Component for React + TypeScript */}
                 <div
-                className="w-[90vw] md:w-[430px] rounded-[20px] bg-gradient-to-tr from-choco-brown from-30% via-choco-brown2 via-50% to-choco-brown to-70% p-[5px] overflow-hidden shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+                className="w-[90vw] md:w-[430px] rounded-[20px] bg-gradient-to-tr from-primary-dark from-30% via-primary via-50% to-primary-dark to-70% p-[5px] overflow-hidden shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
                 >
                 {/* Top Section */}
-                <div className="relative h-[150px] md:h-[200px] rounded-[15px] bg-gradient-to-r from-cyan-700 to-cyan-300 flex items-start justify-between px-4 pt-2">
+                <div className="relative h-[150px] md:h-[200px] rounded-[15px] bg-gradient-to-r from-secondary to-accent-ivory flex items-start justify-between px-4 pt-2">
                     <h1 className="m-auto">Barcode here</h1>
                 </div>
 
@@ -164,5 +145,5 @@ const clubPage = () => {
     );
 };
 
-export default clubPage;
+export default ClubPage;
 

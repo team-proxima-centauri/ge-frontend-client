@@ -14,8 +14,34 @@ import {
   getMyCart 
 } from '@/services/api';
 import { Header } from '@/components/Header';
+import { LoginModal } from '@/components/LoginModal';
+import { ChevronRight, Filter, ArrowLeft } from 'lucide-react';
+
+// Product Categories data
+const productCategories = [
+  { id: 'all', name: 'All Categories' },
+  { id: 'fruits', name: 'Fruits & Vegetables' },
+  { id: 'meat', name: 'Meat & Seafood' },
+  { id: 'dairy', name: 'Dairy & Eggs' },
+  { id: 'bakery', name: 'Bakery' },
+  { id: 'pantry', name: 'Pantry Staples' },
+  { id: 'frozen', name: 'Frozen Foods' },
+  { id: 'beverages', name: 'Beverages' },
+  { id: 'snacks', name: 'Snacks & Sweets' },
+  { id: 'household', name: 'Household' },
+];
+
+// Sort options data
+const sortOptions = [
+  { id: 'name_asc', name: 'Name: A to Z' },
+  { id: 'name_desc', name: 'Name: Z to A' },
+  { id: 'price_asc', name: 'Price: Low to High' },
+  { id: 'price_desc', name: 'Price: High to Low' },
+  { id: 'newest', name: 'Newest First' },
+];
 
 export default function ProductsPage() {
+  // State management
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,8 +50,9 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSort, setSelectedSort] = useState('name_asc');
   const [priceRange, setPriceRange] = useState({ min: 0, max: 100 });
-  const [showFilters, setShowFilters] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [showFilters, setShowFilters] = useState(false); // Add back for Header component
+  const [showLoginModal, setShowLoginModal] = useState(false); // For login modal
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,12 +68,6 @@ export default function ProductsPage() {
         // setLoading(false); 
       }
     };
-
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia('(max-width: 600px)').matches);
-    };
-
-    checkMobile();
 
     fetchProducts();
   }, []);
@@ -78,8 +99,13 @@ export default function ProductsPage() {
   }, [fetchUserCart]);
 
   const handleLoginClick = () => {
-    // TODO: Implement login modal popup or navigation to login page
-    console.log('Login clicked');
+    setShowLoginModal(true);
+  };
+  
+  const handleLoginSuccess = (loggedInUser: User) => {
+    setCurrentUser(loggedInUser);
+    setShowLoginModal(false);
+    fetchUserCart(); // Fetch the user's cart after login
   };
 
   const handleLogoutClick = () => {
@@ -127,22 +153,52 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-choco-bg flex items-center justify-center">
-        <div className="text-xl text-choco-primary">Loading products...</div>
+      <div className="min-h-screen bg-groceryease-bg flex items-center justify-center">
+        <div className="text-xl text-primary">Loading products...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-choco-bg flex items-center justify-center">
-        <div className="text-xl text-choco-redbtn">{error}</div>
+      <div className="min-h-screen bg-groceryease-bg flex items-center justify-center">
+        <div className="text-xl text-status-error">{error}</div>
       </div>
     );
   }
 
+  // Helper function to get category name from ID
+  const getCategoryName = (categoryId: string) => {
+    const category = productCategories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Unknown Category';
+  };
+  
+  // Filter products based on selected category
+  const filteredProducts = products.filter(product => {
+    if (selectedCategory === 'all') return true;
+    return product.category === selectedCategory;
+  });
+
+  // Sort products based on selected sort option
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (selectedSort) {
+      case 'name_asc':
+        return a.name.localeCompare(b.name);
+      case 'name_desc':
+        return b.name.localeCompare(a.name);
+      case 'price_asc':
+        return a.price - b.price;
+      case 'price_desc':
+        return b.price - a.price;
+      case 'newest':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      default:
+        return 0;
+    }
+  });
+
   return (
-    <div className="min-h-screen bg-choco-bg">
+    <div className="min-h-screen bg-groceryease-bg">
       <Header 
         currentUser={currentUser}
         cartItems={cartItems}
@@ -150,8 +206,9 @@ export default function ProductsPage() {
         onLogoutClick={handleLogoutClick}
         onCheckout={handleCheckout}
         onUpdateQuantity={updateQuantity}
+        // Connect filter functionality properly to Header component
         onApplyFilters={() => {
-          // Apply filters logic here
+          // Apply all filters
         }}
         onResetFilters={() => {
           setSelectedCategory('all');
@@ -167,16 +224,158 @@ export default function ProductsPage() {
         onSortChange={setSelectedSort}
         onPriceRangeChange={setPriceRange}
       />
-      <div className={`flex flex-wrap w-full py-8  justify-between gap-1 gap-y-4
-      ${isMobile ? 'px-4' : 'px-8'}`}>
-        {products.map((product) => (
-          <ProductCard 
-            key={product.id} 
-            product={product} 
-            onAddToCart={(quantity) => handleAddToCart(product, quantity)} 
-          />
-        ))}
+      
+      {/* Desktop layout with sidebar and content */}
+      <div className="desktop:flex pt-4">
+        {/* Desktop Sidebar - Only visible on desktop */}
+        <aside className={`hidden ${sidebarVisible ? 'desktop:block' : ''} w-1/4 p-4 bg-white shadow-card rounded-lg mx-4 sticky top-24 max-h-screen overflow-y-auto`}>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-4 text-primary">Categories</h2>
+              <div className="space-y-2">
+                {productCategories.map(category => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`
+                      flex items-center w-full px-3 py-2 rounded-md text-left transition-colors
+                      ${selectedCategory === category.id 
+                        ? 'bg-primary text-white' 
+                        : 'hover:bg-accent-ivory hover:text-primary'}
+                    `}
+                  >
+                    <span>{category.name}</span>
+                    {selectedCategory === category.id && (
+                      <ChevronRight className="ml-auto w-4 h-4" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <h2 className="text-lg font-semibold mb-4 text-primary">Sort By</h2>
+              <select
+                className="w-full p-2 border border-groceryease-border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                value={selectedSort}
+                onChange={(e) => setSelectedSort(e.target.value)}
+              >
+                {sortOptions.map(option => (
+                  <option key={option.id} value={option.id}>{option.name}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <h2 className="text-lg font-semibold mb-4 text-primary">Price Range</h2>
+              <div className="px-2">
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  value={priceRange.max} 
+                  onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) })}
+                  className="w-full accent-primary"
+                />
+                <div className="flex justify-between text-sm text-groceryease-textSecondary">
+                  <span>${priceRange.min}</span>
+                  <span>Up to ${priceRange.max}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+        
+        {/* Collapsible sidebar toggle for desktop */}
+        <button 
+          className="hidden desktop:block fixed left-4 bottom-4 p-3 rounded-full bg-primary text-white shadow-lg z-20 hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+          onClick={() => setSidebarVisible(!sidebarVisible)}
+          aria-label={sidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
+        >
+          {sidebarVisible ? <ArrowLeft className="w-5 h-5" /> : <Filter className="w-5 h-5" />}
+        </button>
+        
+        {/* Main Content */}
+        <main className={`flex-1 p-4 ${sidebarVisible ? 'desktop:w-3/4' : 'desktop:w-full'}`}>
+          {/* Mobile compact header - Only visible on mobile */}
+          <div className="desktop:hidden mb-4">
+            {/* Page title and product count */}
+            <div className="flex justify-between items-center mb-3">
+              <h1 className="text-xl font-bold text-primary">Products</h1>
+              <p className="text-sm text-groceryease-textSecondary">
+                {sortedProducts.length} products
+              </p>
+            </div>
+            
+            {/* Simple sort dropdown */}
+            <div className="flex justify-end">
+              <select
+                className="text-xs py-1 px-2 border border-groceryease-border rounded-md bg-white"
+                value={selectedSort}
+                onChange={(e) => setSelectedSort(e.target.value)}
+              >
+                {sortOptions.map(option => (
+                  <option key={option.id} value={option.id}>{option.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {/* Desktop Page heading & product count - Only visible on desktop */}
+          <div className="hidden desktop:block mb-6">
+            <h1 className="text-2xl font-bold text-primary mb-2">Products</h1>
+            <p className="text-groceryease-textSecondary">
+              {sortedProducts.length} products in {selectedCategory === 'all' ? 'all categories' : getCategoryName(selectedCategory)}
+            </p>
+          </div>
+          
+          {/* We've removed the duplicate mobile filter panel since we're using the header's filter functionality */}
+          
+          {/* Product Grid - Responsive and compact for mobile */}
+          {sortedProducts.length > 0 ? (
+            <div className="grid grid-cols-2 gap-2 desktop:grid-cols-3 desktop:gap-6 wide:grid-cols-4">
+              {sortedProducts.map(product => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onAddToCart={quantity => handleAddToCart(product, quantity)}
+                />
+              ))}
+            </div>
+          ) : (
+            /* Empty state when no products match filters */
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-20 h-20 rounded-full bg-accent-ivory flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-primary">No products found</h2>
+              <p className="text-groceryease-textSecondary mt-2 max-w-md">
+                We couldn&apos;t find any products matching your criteria. Try adjusting your filters or categories.
+              </p>
+              <button
+                onClick={() => {
+                  setSelectedCategory('all');
+                  setSelectedSort('name_asc');
+                  setPriceRange({ min: 0, max: 100 });
+                }}
+                className="mt-4 bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors"
+              >
+                Reset Filters
+              </button>
+            </div>
+          )}
+        </main>
       </div>
+      
+      {/* Login Modal */}
+      {showLoginModal && (
+        <LoginModal
+          onLoginSuccess={handleLoginSuccess}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }

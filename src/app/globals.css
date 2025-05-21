@@ -1,21 +1,112 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import '../styles/colors.css';
+@import '../styles/typography.css';
+@import '../styles/spacing.css';
+@import '../styles/grid.css';
+@import '../styles/components.css';
+@import '../styles/a11y.css';
 
 :root {
-  --background: #FFE9DA;
-  --foreground: #000000;
+  /* Legacy variables for compatibility */
+  --background: var(--color-bg);
+  --foreground: var(--color-text-primary);
+  --font-mono: 'IBM Plex Mono', monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-mono: var(--font-ibm-plex-mono);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text-primary);
+  --font-mono: var(--font-mono);
 }
 
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-ibm-plex-mono);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+}
+
+/* Chocolate-brown theme styling */
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--color-primary-variant);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-primary-variant);
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+  background-color: var(--color-secondary-variant);
+}
+
+/* Cards and Surfaces */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
+}
+
+/* Form Elements */
+input, select, textarea {
+  background-color: white;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
+  transition: box-shadow var(--transition-fast) var(--ease-out);
+}
+
+/* Links */
+a {
+  color: var(--color-primary-variant);
+  text-decoration: none;
+  transition: color var(--transition-fast) var(--ease-out);
+}
+
+a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
+  border-radius: 0.25rem;
+}
+
+/* Status Colors */
+.success {
+  color: var(--color-success);
+}
+
+.warning {
+  color: var(--color-warning);
+}
+
+.error {
+  color: var(--color-error);
+}
+
+.info {
+  color: var(--color-info);
 }

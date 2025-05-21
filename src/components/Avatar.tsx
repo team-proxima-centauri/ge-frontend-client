@@ -42,7 +42,7 @@ const Avatar: React.FC<AvatarProps> = ({
   };
 
   return (
-    <div className={`relative rounded-full overflow-hidden bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white font-medium ${sizeClasses[size]}`}>
+    <div className={`relative rounded-full overflow-hidden bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-medium ${sizeClasses[size]}`}>
       {src ? (
         <div className="relative w-full h-full">
           <Image 

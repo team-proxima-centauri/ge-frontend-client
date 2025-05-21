@@ -339,7 +339,7 @@ const GroupOrderPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-pink-50/30">
+        <div className="min-h-screen bg-groceryease-bg">
             <Header 
                 currentUser={currentUser}
                 cartItems={cartItems}
@@ -367,7 +367,7 @@ const GroupOrderPage = () => {
             {loadingCart ? (
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 flex justify-center items-center min-h-[60vh]">
                     <div className="text-center">
-                        <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                         <p className="text-gray-700">Loading your cart...</p>
                     </div>
                 </div>
@@ -375,13 +375,13 @@ const GroupOrderPage = () => {
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Left side - Group Information */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-pink-100">
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-groceryease-border">
                         <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Group Shopping</h1>
                         
                         {groupCode ? (
-                            <div className="bg-pink-50 p-3 sm:p-6 rounded-lg mb-4 sm:mb-6 border border-pink-200">
+                            <div className="bg-accent-ivory p-3 sm:p-6 rounded-lg mb-4 sm:mb-6 border border-groceryease-border">
                                 <h2 className="text-lg font-semibold text-gray-800 mb-2">Your Group Code</h2>
-                                <div className="bg-white w-full p-2 sm:p-4 text-center font-mono text-xl sm:text-2xl font-bold text-pink-800 rounded-md border border-pink-300 mb-2">
+                                <div className="bg-groceryease-surface w-full p-2 sm:p-4 text-center font-mono text-xl sm:text-2xl font-bold text-primary-dark rounded-md border border-groceryease-border mb-2">
                                     {groupCode}
                                 </div>
                                 <p className="text-sm text-gray-600">
@@ -393,7 +393,7 @@ const GroupOrderPage = () => {
                                     <ul className="space-y-2">
                                         {groupCartState?.members?.map(member => (
                                             <li key={member.user_id} className="flex items-center">
-                                                <div className="w-8 h-8 bg-pink-200 rounded-full flex items-center justify-center text-sm text-pink-800 mr-2">
+                                                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-sm text-white mr-2">
                                                     {member.name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <span className="text-gray-800">
@@ -406,9 +406,9 @@ const GroupOrderPage = () => {
                                 </div>
                                 
                                 {/* Join another group section */}
-                                <div className="mt-6 pt-4 border-t border-pink-200">
+                                <div className="mt-6 pt-4 border-t border-groceryease-border">
                                     <details className="text-gray-700">
-                                        <summary className="cursor-pointer font-medium hover:text-pink-600 transition-colors">
+                                        <summary className="cursor-pointer font-medium hover:text-primary transition-colors">
                                             Join a different group
                                         </summary>
                                         <div className="mt-3 pl-2">
@@ -419,7 +419,7 @@ const GroupOrderPage = () => {
                                                 <input 
                                                     type="text" 
                                                     placeholder="Enter new group code" 
-                                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500 mb-2 sm:mb-0"
+                                                    className="w-full p-2 border border-groceryease-border rounded-md focus:ring-primary focus:border-primary mb-2 sm:mb-0 bg-accent-ivory"
                                                     maxLength={6}
                                                     onChange={(e) => {
                                                         // Only update the newGroupCode state, not the current groupCode
@@ -438,7 +438,7 @@ const GroupOrderPage = () => {
                                                         }
                                                         handleLeaveAndJoinNewGroup(newGroupCode);
                                                     }}
-                                                    className="bg-white text-pink-600 px-4 py-2 rounded-md border border-pink-500 hover:bg-pink-50 transition-colors"
+                                                    className="bg-groceryease-surface text-primary px-4 py-2 rounded-md border border-primary hover:bg-accent-ivory transition-colors"
                                                     disabled={loadingCart || newGroupCode.length !== 6}
                                                 >
                                                     {loadingCart ? 'Processing...' : 'Leave & Join New Group'}
@@ -448,10 +448,10 @@ const GroupOrderPage = () => {
                                     </details>
                                 </div>
                                 
-                                <div className="mt-6 border-t border-pink-100 pt-4">
+                                <div className="mt-6 border-t border-groceryease-border pt-4">
                                     <button 
                                         onClick={handleLeaveGroupCart}
-                                        className="w-full flex items-center justify-center gap-2 bg-white text-pink-600 p-3 rounded-md border border-pink-500 hover:bg-pink-50 transition-colors"
+                                        className="w-full flex items-center justify-center gap-2 bg-primary text-white p-3 rounded-md hover:bg-primary-dark transition-colors"
                                         disabled={loadingCart}
                                     >
                                         {loadingCart ? (
@@ -469,13 +469,13 @@ const GroupOrderPage = () => {
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                <div className="bg-pink-50 p-3 sm:p-6 rounded-lg mb-3 sm:mb-4 border border-pink-200">
+                                <div className="bg-accent-ivory p-3 sm:p-6 rounded-lg mb-3 sm:mb-4 border border-groceryease-border">
                                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Join a Group</h2>
                                     <div className="flex flex-col sm:flex-row gap-2">
                                         <input 
                                             type="text" 
                                             placeholder="Enter group code" 
-                                            className="w-full p-2 sm:p-3 border border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500 mb-2 sm:mb-0"
+                                            className="w-full p-2 sm:p-3 border border-groceryease-border rounded-md focus:ring-primary focus:border-primary mb-2 sm:mb-0 bg-groceryease-surface"
                                             maxLength={6}
                                             onChange={(e) => {
                                                 // Only update the state, don't trigger any API calls here
@@ -488,7 +488,7 @@ const GroupOrderPage = () => {
                                         />
                                         <button 
                                             onClick={() => handleJoinGroup(groupCode)}
-                                            className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 transition-colors w-full sm:w-auto"
+                                            className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors w-full sm:w-auto"
                                             disabled={isJoiningGroup || groupCode.length !== 6}
                                         >
                                             {isJoiningGroup ? 'Joining...' : 'Join'}
@@ -502,13 +502,13 @@ const GroupOrderPage = () => {
                                     </p>
                                 </div>
                                 
-                                <div className="text-center my-4 text-gray-600 font-medium">Or</div>
+                                <div className="text-center my-4 text-primary-dark font-medium">Or</div>
                                 
-                                <div className="bg-pink-50 p-3 sm:p-6 rounded-lg border border-pink-200">
+                                <div className="bg-accent-ivory p-3 sm:p-6 rounded-lg border border-groceryease-border">
                                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Create a New Group</h2>
                                     <button 
                                         onClick={handleCreateGroup}
-                                        className="w-full flex items-center justify-center gap-2 bg-pink-500 text-white p-3 rounded-md hover:bg-pink-600 transition-colors"
+                                        className="w-full flex items-center justify-center gap-2 bg-primary text-white p-3 rounded-md hover:bg-primary-dark transition-colors"
                                         disabled={isCreatingGroup}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -527,7 +527,7 @@ const GroupOrderPage = () => {
                             <div className="mt-6">
                                 <button 
                                     onClick={() => router.push('/products')}
-                                    className="w-full bg-pink-500 text-white py-3 px-4 rounded-md font-semibold hover:bg-pink-600 transition-colors"
+                                    className="w-full bg-primary text-white py-3 px-4 rounded-md font-semibold hover:bg-primary-dark transition-colors"
                                 >
                                     Shop Products
                                 </button>
@@ -536,20 +536,20 @@ const GroupOrderPage = () => {
                     </div>
                     
                     {/* Right side - Cart Preview */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-pink-100">
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-groceryease-border">
                         <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">
                             {groupCode ? 'Group Cart' : 'Your Cart'}
                         </h2>
                         
                         {cartItems.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12">
-                                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-pink-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
-                                    <svg className="h-8 w-8 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                                    <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
                                 </div>
                                 <p className="text-gray-700 text-center mb-2">Your cart is empty</p>
-                                <p className="text-sm text-pink-600 text-center">
+                                <p className="text-sm text-primary text-center mt-3">
                                     {groupCode ? 'Add products to your group cart!' : 'Join or create a group to start shopping together'}
                                 </p>
                             </div>
@@ -557,14 +557,14 @@ const GroupOrderPage = () => {
                             <div className="space-y-4">
                                 <div className="max-h-96 overflow-y-auto">
                                     {cartItems.map((item) => (
-                                        <div key={item.id} className="flex items-center justify-between p-3 border-b border-pink-100">
+                                        <div key={item.id} className="flex items-center justify-between p-3 border-b border-groceryease-border">
                                             <div className="flex items-center">
-                                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-pink-50 rounded mr-2 sm:mr-3 flex-shrink-0"></div>
+                                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-accent-ivory rounded mr-2 sm:mr-3 flex-shrink-0"></div>
                                                 <div>
                                                     <p className="font-medium text-gray-800">{item.name}</p>
-                                                    <p className="text-sm text-pink-700">${formatPrice(item.price)}</p>
+                                                    <p className="text-sm text-primary-dark">${formatPrice(item.price)}</p>
                                                     {groupCode && item.added_by && (
-                                                        <p className="text-xs text-pink-600">
+                                                        <p className="text-xs text-primary">
                                                             Added by: {item.added_by === currentUser?.id ? 'You' : 
                                                                 groupCartState?.members?.find(m => m.user_id === item.added_by)?.name || 'Unknown'}
                                                         </p>
@@ -574,17 +574,17 @@ const GroupOrderPage = () => {
                                             <div className="flex items-center">
                                                 <button 
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                    className="px-1 sm:px-2 py-1 border border-pink-200 rounded-l text-xs sm:text-sm text-pink-700 hover:bg-pink-50"
+                                                    className="px-1 sm:px-2 py-1 border border-groceryease-border rounded-l text-xs sm:text-sm text-primary-dark hover:bg-accent-ivory"
                                                     aria-label="Decrease quantity"
                                                 >
                                                     -
                                                 </button>
-                                                <span className="px-2 sm:px-3 py-1 border-t border-b border-pink-200 text-xs sm:text-sm bg-white">
+                                                <span className="px-2 sm:px-3 py-1 border-t border-b border-groceryease-border text-xs sm:text-sm bg-groceryease-surface">
                                                     {item.quantity}
                                                 </span>
                                                 <button 
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                    className="px-1 sm:px-2 py-1 border border-pink-200 rounded-r text-xs sm:text-sm text-pink-700 hover:bg-pink-50"
+                                                    className="px-1 sm:px-2 py-1 border border-groceryease-border rounded-r text-xs sm:text-sm text-primary-dark hover:bg-accent-ivory"
                                                     aria-label="Increase quantity"
                                                 >
                                                     +
@@ -594,16 +594,16 @@ const GroupOrderPage = () => {
                                     ))}
                                 </div>
                                 
-                                <div className="border-t border-pink-100 pt-4">
+                                <div className="border-t border-groceryease-border pt-4">
                                     <div className="flex justify-between items-center mb-4">
                                         <span className="font-medium text-gray-700">Total:</span>
-                                        <span className="font-bold text-lg text-pink-700">
+                                        <span className="font-bold text-lg text-primary-dark">
                                             ${formatPrice(calculateTotal(cartItems))}
                                         </span>
                                     </div>
                                     <button
                                         onClick={handleCheckout}
-                                        className="w-full bg-pink-500 text-white py-3 px-4 rounded-md font-semibold hover:bg-pink-600 transition-colors"
+                                        className="w-full bg-primary text-white py-3 px-4 rounded-md font-semibold hover:bg-primary-dark transition-colors"
                                     >
                                         {groupCode ? 'Checkout as Group' : 'Checkout'}
                                     </button>

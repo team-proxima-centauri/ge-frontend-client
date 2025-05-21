@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ShoppingCart, Plus, Info } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/services/api';
-import { usePathname } from 'next/navigation';
 
 interface ProductCardProps {
   product: Product;
@@ -12,89 +11,108 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
-  const pathname = usePathname();
   const [isSelected, setIsSelected] = useState(false);
-  const [quantity, setQuantity] = useState(1);
-  const [isMobile, setIsMobile] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  // Detect if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia('(max-width: 600px)').matches);
-    };
-    
-    // Initial check
-    checkMobile();
-    
-    // Add event listener for window resize
-    window.addEventListener('resize', checkMobile);
-    
-    // Cleanup
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const handleInternalAddToCart = () => {
-    onAddToCart(quantity);
-    setIsSelected(false);
-    setQuantity(1);
-  };
 
   // Format unit display
   const formatUnit = (unit: string) => {
     if (!unit) return '';
     return `per ${unit}`;
   };
+  
+  // Handle keyboard interactions
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsSelected(!isSelected);
+    } else if (e.key === 'Escape' && isSelected) {
+      setIsSelected(false);
+    }
+  };
+  
+  // Handle quick add with keyboard
+  const handleQuickAddKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onAddToCart(1);
+    }
+  };
 
   return (
       <div 
+        ref={cardRef}
         className={`
-          my-auto flex flex-col bg-white rounded-xl overflow-hidden shadow-sm 
+          my-auto flex flex-col bg-groceryease-surface rounded-xl overflow-hidden shadow-sm 
           transition-all duration-300 
-          ${isMobile ? 'h-[15rem] w-[45vw]' : 'w-[18vw] aspect-[1/1.5]'}
-          ${isSelected ? 'ring-2 ring-choco-greenbtn' : ''}
-          ${isMobile ? 'active:shadow-md' : 'hover:shadow-xl'}
+          md:w-full desktop:hover:scale-[1.02] desktop:focus-within:scale-[1.02]
+          w-full md:max-w-full aspect-[1/1.4]
+          ${isSelected ? 'ring-2 ring-primary' : ''}
+          hover:shadow-card-hover focus-within:shadow-card-hover
+          animate-fade-in
         `}
         onClick={() => setIsSelected(!isSelected)}
         onMouseEnter={() => setIsSelected(true)}
         onMouseLeave={() => setIsSelected(false)}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-label={`Product: ${product.name}, Price: $${product.price.toFixed(2)}`}
       >
         {/* Product Image */}
         <div className="relative w-full aspect-square overflow-hidden bg-gray-100"> 
           {product.image_url ? (
             <Image 
               src={product.image_url} 
-              alt={product.name} 
+              alt={`${product.name} product image`}
               width={300}
               height={300}
               style={{ objectFit: 'cover' }}
-              className={`
-                w-full h-full transition-transform duration-300
-                ${isMobile ? 'active:scale-105' : 'group-hover:scale-105'}
-              `}
+              className="w-full h-full transition-transform duration-300 hover:scale-105 active:scale-105"
+              priority={true}
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className='text-sm text-gray-500'>No Image</span>
+              <span className='text-sm text-gray-500' aria-hidden="true">No Image</span>
+              <span className="sr-only">No product image available for {product.name}</span>
             </div>
           )}
           
           {/* Quick add button */}
           {isSelected && (
-            <button 
-              className={`
-                absolute bottom-2 right-2 bg-choco-greenbtn text-white p-2 rounded-full 
-                shadow-md hover:bg-green-700 transition-all duration-300
-                opacity-100
-                ${isMobile ? 'active:scale-110' : ''}
-              `}
-              onClick={(e) => {
-                e.stopPropagation();
-                onAddToCart(1);
-              }}
-              aria-label="Quick add to cart"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
+            <div className="absolute bottom-2 right-2 flex gap-2 animate-slide-up">
+              <button 
+                className="
+                  bg-primary text-white p-2 rounded-full 
+                  shadow-md hover:bg-primary-dark focus:ring-2 focus:ring-offset-2 focus:ring-primary
+                  transition-all duration-300 hover:scale-110 active:scale-110
+                "
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToCart(1);
+                }}
+                onKeyDown={handleQuickAddKeyDown}
+                aria-label={`Add ${product.name} to cart`}
+              >
+                <Plus className="icon-sm" />
+                <span className="sr-only">Add to cart</span>
+              </button>
+              <button 
+                className="
+                  bg-secondary text-primary p-2 rounded-full 
+                  shadow-md hover:bg-secondary-variant focus:ring-2 focus:ring-offset-2 focus:ring-primary
+                  transition-all duration-300 hover:scale-110 active:scale-110
+                "
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Product details functionality would go here
+                }}
+                aria-label={`View ${product.name} details`}
+              >
+                <Info className="icon-sm" />
+                <span className="sr-only">View details</span>
+              </button>
+            </div>
           )}
         </div>
         
@@ -106,20 +124,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
           
           <div className="mt-1 flex items-end justify-between">
             <div>
-              <p className="text-lg font-semibold text-gray-900">${product.price.toFixed(2)}</p>
+              <p className="text-lg font-semibold text-gray-900">
+                <span aria-label={`Price: ${product.price.toFixed(2)} dollars`}>
+                  ${product.price.toFixed(2)}
+                </span>
+              </p>
               <p className="text-xs text-gray-500">{formatUnit(product.unit)}</p>
+              {product.stock_quantity && product.stock_quantity < 10 && (
+                <p className="text-xs text-error mt-1" aria-live="polite">
+                  Only {product.stock_quantity} left
+                </p>
+              )}
             </div>
             
             {isSelected && (
               <button 
-                className="text-choco-greenbtn hover:text-green-700 transition-colors"
+                className="text-primary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary rounded-full p-1 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsSelected(!isSelected);
+                  onAddToCart(1);
                 }}
-                aria-label="Show options"
+                aria-label={`Add ${product.name} to cart`}
               >
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="icon-md" />
               </button>
             )}
           </div>

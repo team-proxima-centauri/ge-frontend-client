@@ -48,12 +48,12 @@ export const GroupCart: React.FC<GroupCartProps> = ({
       {/* Group Cart Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-800 rounded-full transition-all duration-300 hover:bg-pink-100 relative"
+        className="p-2 text-primary-dark rounded-full transition-all duration-300 hover:bg-secondary/20 relative"
         aria-label="Toggle Group Cart"
       >
         <Users className="h-6 w-6" />
         {groupCode && itemCount > 0 && (
-          <span className="absolute -top-1 -right-1 block h-5 w-5 rounded-full ring-2 ring-white bg-pink-500 text-xs text-white text-center flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 block h-5 w-5 rounded-full ring-2 ring-white bg-primary text-xs text-white text-center flex items-center justify-center">
             {itemCount}
           </span>
         )}
@@ -61,14 +61,14 @@ export const GroupCart: React.FC<GroupCartProps> = ({
 
       {/* Group Cart Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-pink-100">
-          <div className="flex justify-between items-center p-4 bg-pink-50">
+        <div className="absolute right-0 mt-2 w-80 bg-groceryease-surface rounded-lg shadow-lg z-50 overflow-hidden border border-groceryease-border">
+          <div className="flex justify-between items-center p-4 bg-accent-ivory">
             <h2 className="text-lg font-semibold text-gray-800">
               Group Shopping
             </h2>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 text-gray-600 hover:text-gray-800 rounded-full hover:bg-pink-100"
+              className="p-1 text-gray-600 hover:text-primary-dark rounded-full hover:bg-secondary/20"
               aria-label="Close Group Cart"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -90,13 +90,13 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                     value={joinCode}
                     onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                     placeholder="Enter group code"
-                    className="flex-1 p-2 border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500"
+                    className="flex-1 p-2 border border-groceryease-border rounded focus:ring-primary focus:border-primary bg-accent-ivory"
                     maxLength={6}
                   />
                   <button
                     onClick={() => onJoinGroup && onJoinGroup(joinCode)}
                     disabled={joinCode.length < 6}
-                    className="bg-pink-500 text-white p-2 rounded disabled:opacity-50"
+                    className="bg-primary text-white p-2 rounded disabled:opacity-50"
                   >
                     Join
                   </button>
@@ -109,7 +109,7 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                 <h3 className="font-medium text-gray-700 mb-2">Create a new group</h3>
                 <button
                   onClick={onCreateGroup}
-                  className="w-full flex items-center justify-center gap-2 bg-pink-100 text-pink-800 p-3 rounded-lg hover:bg-pink-200 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-secondary/20 text-primary-dark p-3 rounded-lg hover:bg-secondary/30 transition-colors"
                 >
                   <Plus size={18} />
                   <span>Create Group Cart</span>
@@ -119,15 +119,15 @@ export const GroupCart: React.FC<GroupCartProps> = ({
           ) : (
             // User is in a group
             <>
-              <div className="p-4 bg-pink-50 border-b border-pink-100">
+              <div className="p-4 bg-accent-ivory border-b border-groceryease-border">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-medium text-gray-700">Group Code:</h3>
-                    <p className="text-2xl font-bold tracking-wider text-pink-800">{groupCode}</p>
+                    <p className="text-2xl font-bold tracking-wider text-primary-dark">{groupCode}</p>
                   </div>
                   <button
                     onClick={copyCodeToClipboard}
-                    className="p-2 bg-white rounded-full hover:bg-gray-100"
+                    className="p-2 bg-groceryease-surface rounded-full hover:bg-accent-ivory"
                     title="Copy code"
                   >
                     {codeCopied ? <Check size={20} className="text-green-500" /> : <Copy size={20} />}
@@ -136,12 +136,12 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                 <p className="text-xs text-gray-500 mt-1">Share this code with friends to shop together</p>
               </div>
               
-              <div className="p-3 border-b border-pink-100">
+              <div className="p-3 border-b border-groceryease-border">
                 <h3 className="font-medium text-gray-700 mb-2">Group Members ({groupMembers.length}):</h3>
                 <div className="max-h-24 overflow-y-auto">
                   {groupMembers.map((member) => (
                     <div key={member.id} className="flex items-center py-1">
-                      <div className="w-6 h-6 bg-pink-200 rounded-full flex items-center justify-center text-xs text-pink-800 mr-2">
+                      <div className="w-6 h-6 bg-secondary/30 rounded-full flex items-center justify-center text-xs text-primary-dark mr-2">
                         {member.name.charAt(0).toUpperCase()}
                       </div>
                       <span className="text-sm text-gray-800">
@@ -163,7 +163,7 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                 ) : (
                   <ul className="space-y-3">
                     {cartItems.map((item) => (
-                      <li key={item.id} className="flex items-center justify-between p-2 border-b border-pink-100 pb-3">
+                      <li key={item.id} className="flex items-center justify-between p-2 border-b border-groceryease-border pb-3">
                         <div className="flex items-center">
                           <div className="w-16 h-16 bg-gray-100 rounded mr-3 flex-shrink-0 overflow-hidden">
                             {item.image_url && (
@@ -180,7 +180,7 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                             <p className="font-medium text-gray-800">{item.name}</p>
                             <p className="text-sm text-gray-600">${formatPrice(item.price)}</p>
                             {item.added_by && (
-                              <p className="text-xs text-pink-600">
+                              <p className="text-xs text-primary">
                                 Added by: {item.added_by === currentUser?.id ? 'You' : 
                                   groupMembers.find(m => m.id === item.added_by)?.name || 'Unknown'}
                               </p>
@@ -190,17 +190,17 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                         <div className="flex items-center">
                           <button 
                             onClick={() => onUpdateQuantity(item.id, Math.max(0, item.quantity - 1))} 
-                            className="px-2 py-1 border border-gray-300 rounded-l hover:bg-pink-50"
+                            className="px-2 py-1 border border-groceryease-border rounded-l hover:bg-accent-ivory"
                             aria-label="Decrease quantity"
                           >
                             -
                           </button>
-                          <span className="px-3 py-1 border-t border-b border-gray-300 bg-white">
+                          <span className="px-3 py-1 border-t border-b border-groceryease-border bg-groceryease-surface">
                             {item.quantity}
                           </span>
                           <button 
                             onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} 
-                            className="px-2 py-1 border border-gray-300 rounded-r hover:bg-pink-50"
+                            className="px-2 py-1 border border-groceryease-border rounded-r hover:bg-accent-ivory"
                             aria-label="Increase quantity"
                           >
                             +
@@ -213,7 +213,7 @@ export const GroupCart: React.FC<GroupCartProps> = ({
               </div>
               
               {cartItems.length > 0 && (
-                <div className="p-4 bg-pink-50 border-t border-pink-100">
+                <div className="p-4 bg-accent-ivory border-t border-groceryease-border">
                   <div className="flex justify-between items-center mb-3">
                     <span className="font-medium text-gray-700">Total:</span>
                     <span className="font-semibold text-gray-900">${totalAmount}</span>
@@ -223,7 +223,7 @@ export const GroupCart: React.FC<GroupCartProps> = ({
                       onCheckout();
                       setIsOpen(false);
                     }}
-                    className="w-full py-3 px-4 bg-pink-500 text-white rounded-lg font-semibold hover:bg-pink-600 transition-colors"
+                    className="w-full py-3 px-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors"
                   >
                     Checkout as Group
                   </button>

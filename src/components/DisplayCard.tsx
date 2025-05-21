@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus } from 'lucide-react';
+import { ShoppingCart, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/services/api';
-import { usePathname } from 'next/navigation';
 
 interface DisplayCardProps {
   product: Product;
@@ -12,9 +11,7 @@ interface DisplayCardProps {
 }
 
 const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
-  const pathname = usePathname();
   const [isSelected, setIsSelected] = useState(false);
-  const [quantity, setQuantity] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect if device is mobile
@@ -33,11 +30,6 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleInternalAddToCart = () => {
-    onAddToCart(quantity);
-    setIsSelected(false);
-    setQuantity(1);
-  };
 
   // Format unit display
   const formatUnit = (unit: string) => {
@@ -48,10 +40,10 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
   return (
       <div 
         className={`
-          m-auto flex px-2 flex-col bg-white rounded-xl overflow-hidden shadow-sm 
+          m-auto flex px-2 flex-col bg-groceryease-surface rounded-xl overflow-hidden shadow-sm 
           transition-all duration-300 
           ${isMobile ? 'w-[85vw] aspect-[1/1.2]' : 'h-[20rem] w-[24rem]'}
-          ${isSelected ? 'ring-2 ring-choco-greenbtn' : ''}
+          ${isSelected ? 'ring-2 ring-primary' : ''}
           ${isMobile ? 'active:shadow-md' : 'hover:shadow-md'}
         `}
         onClick={() => setIsSelected(!isSelected)}
@@ -82,8 +74,8 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
           {isSelected && (
             <button 
               className={`
-                absolute bottom-2 right-2 bg-choco-greenbtn text-white p-2 rounded-full 
-                shadow-md hover:bg-green-700 transition-all duration-300
+                absolute bottom-2 right-2 bg-primary text-white p-2 rounded-full 
+                shadow-md hover:bg-primary-dark transition-all duration-300
                 opacity-100
                 ${isMobile ? 'active:scale-110' : ''}
               `}
@@ -112,7 +104,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
             
             {isSelected && (
               <button 
-                className="text-choco-greenbtn hover:text-green-700 transition-colors"
+                className="text-primary hover:text-primary-dark transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsSelected(!isSelected);

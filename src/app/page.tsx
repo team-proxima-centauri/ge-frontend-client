@@ -5,6 +5,8 @@ import { RecommendationCard } from "@/components/reco";
 import { DisplayCard } from "@/components/DisplayCard";
 import { LoginModal } from '@/components/LoginModal';
 import { Header } from '@/components/Header';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   getProducts,
@@ -264,18 +266,76 @@ export default function Home() {
       {/* MAIN CONTENT */}
       <main className="transition-all duration-300 flex-1 w-full">
         {/* Main Content Container with proper background */}
-        <div className="bg-choco-bg min-h-screen pb-10">
-          {/* Seasonal Specials Section */}
+        <div className="bg-groceryease-bg min-h-screen pb-10">
+          {/* Hero Section for Desktop */}
+          <div className="hidden desktop:block relative bg-secondary text-gray-800 py-12 mb-8">
+            <div className="max-w-7xl mx-auto px-8 grid grid-cols-2 gap-12 items-center">
+              <div>
+                <h1 className="text-4xl font-bold mb-4">Welcome to GroceryEase</h1>
+                <p className="text-xl mb-6">Your one-stop solution for grocery delivery with individual and group shopping options.</p>
+                <div className="flex space-x-4">
+                  <Link href="/products" className="bg-primary text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-primary-dark hover:text-white hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1">Shop Now</Link>
+                  <Link href="/group-order" className="border-2 border-gray-800 px-6 py-3 rounded-lg font-medium hover:bg-white/20 transition-all duration-300">Try Group Order</Link>
+                </div>
+              </div>
+              <div className="relative h-80 rounded-lg overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary/20 to-secondary-light/30"></div>
+                {/* Abstract grocery illustration */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="grid grid-cols-3 gap-4 p-4 w-full h-full">
+                    {products.slice(0, 6).map((product, index) => (
+                      <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg flex items-center justify-center">
+                        {product.image_url && (
+                          <Image 
+                            src={product.image_url} 
+                            alt={product.name}
+                            width={80}
+                            height={80}
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Seasonal Specials Section - More compact on mobile */}
           {products.length > 0 && (
-            <div className="flex px-6 pt-4">
-              <div className="m-auto bg-gradient-to-r from-choco-card to-choco-brown/30 w-auto max-w-full rounded-xl p-6 shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Seasonal Specials</h2>
-                <p className="text-gray-600 mb-6">Discover our limited-time offers on seasonal products</p>
+            <div className="px-6 pt-4 desktop:px-8 desktop:pt-8">
+              {/* Mobile version - more compact */}
+              <div className="desktop:hidden m-auto bg-gradient-to-r from-secondary/40 to-secondary-light/30 w-auto max-w-full rounded-xl p-4 shadow-sm">
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-lg font-bold text-gray-800">Seasonal Specials</h2>
+                  <Link href="/products" className="text-sm text-primary font-medium">View all</Link>
+                </div>
                 
-                <div className="flex flex-wrap md:flex-nowrap gap-2">
-                  {products.slice(0, 2).map((product) => (
+                <div className="overflow-x-auto pb-2">
+                  <div className="flex gap-3 w-max">
+                    {products.slice(0, 3).map((product) => (
+                      <div key={`special-mobile-${product.id}`} className="w-40 flex-shrink-0">
+                        <RecommendationCard 
+                          product={product}
+                          onAddToCart={(quantity) => handleAddToCart(product, quantity)} 
+                          isRecentlyPurchased={product.id === products[0]?.id}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Desktop version - full sized */}
+              <div className="hidden desktop:block m-auto bg-gradient-to-r from-secondary to-secondary-light/70 w-auto max-w-full rounded-xl p-8 shadow-sm">
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">Seasonal Specials</h2>
+                <p className="text-gray-600 mb-6 text-lg">Discover our limited-time offers on seasonal products</p>
+                
+                <div className="grid grid-cols-4 gap-4">
+                  {products.slice(0, 4).map((product) => (
                     <RecommendationCard 
-                      key={`special-${product.id}`} 
+                      key={`special-desktop-${product.id}`} 
                       product={product}
                       onAddToCart={(quantity) => handleAddToCart(product, quantity)} 
                       isRecentlyPurchased={product.id === products[0]?.id}
@@ -287,13 +347,20 @@ export default function Home() {
           )}
 
           {/* Recently Purchased Section */}
-          <div className="p-6 pt-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Recently Purchased</h2>
+          <div className="p-6 pt-8 desktop:px-8 desktop:pt-12">
+            {/* Mobile header - more compact */}
+            <div className="flex justify-between items-center mb-3 desktop:hidden">
+              <h2 className="text-lg font-bold text-gray-800">Recently Purchased</h2>
+              <Link href="/products" className="text-sm text-primary font-medium">View all</Link>
+            </div>
+            
+            {/* Desktop header - full size with controls */}
+            <div className="hidden desktop:flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-800">Recently Purchased</h2>
               <div className="flex gap-2">
                 <button
                   onClick={scrollRecentlyPurchasedPrev}
-                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="p-2 rounded-full bg-accent-ivory hover:bg-secondary transition-colors"
                   aria-label="Previous items"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,7 +369,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={scrollRecentlyPurchasedNext}
-                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="p-2 rounded-full bg-accent-ivory hover:bg-secondary transition-colors"
                   aria-label="Next items"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,10 +380,10 @@ export default function Home() {
             </div>
             
             {loadingProducts ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 desktop:grid-cols-4 gap-4">
                 {[...Array(4)].map((_, index) => (
-                  <div key={index} className="bg-white rounded-xl overflow-hidden shadow-sm h-64 animate-pulse">
-                    <div className="bg-gray-200 h-40 w-full"></div>
+                  <div key={index} className="bg-groceryease-surface rounded-xl overflow-hidden shadow-sm h-60 animate-pulse">
+                    <div className="bg-gray-200 h-36 w-full"></div>
                     <div className="p-3">
                       <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                       <div className="h-4 bg-gray-200 rounded w-1/2"></div>
@@ -336,33 +403,49 @@ export default function Home() {
                 <p>No products found. Check back later for new arrivals!</p>
               </div>
             ) : (
-              <div className="overflow-hidden" ref={recentlyPurchasedEmblaRef}>
-                <div className="flex gap-4 py-1">
-                  {products.slice(0, 5).map((product) => (
-                    <div 
-                      key={product.id}
-                      className="pl-2 flex-[0_0_calc(100%-1rem)] sm:flex-[0_0_calc(50%-0.75rem)] md:flex-[0_0_calc(33.333%-1rem)] lg:flex-[0_0_calc(25%-0.75rem)]"
-                    >
-                      <DisplayCard 
-                        product={product} 
-                        onAddToCart={(quantity) => handleAddToCart(product, quantity)} 
-                      />
-                    </div>
-                  ))}
+              <>
+                {/* Mobile view - simple horizontal scroll */}
+                <div className="desktop:hidden overflow-x-auto pb-2">
+                  <div className="flex gap-3 w-max">
+                    {products.slice(0, 4).map((product) => (
+                      <div key={`recent-mobile-${product.id}`} className="w-40 flex-shrink-0">
+                        <RecommendationCard 
+                          product={product}
+                          onAddToCart={(quantity) => handleAddToCart(product, quantity)} 
+                          isRecentlyPurchased={true}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                
+                {/* Desktop view - embla carousel */}
+                <div className="hidden desktop:block overflow-hidden" ref={recentlyPurchasedEmblaRef}>
+                  <div className="flex -ml-4">
+                    {products.slice(0, 6).map((product) => (
+                      <div className="flex-none pl-4 w-full sm:w-1/2 md:w-1/3 desktop:w-1/4 xl:w-1/5" key={`recent-desktop-${product.id}`}>
+                        <RecommendationCard 
+                          product={product} 
+                          onAddToCart={(quantity) => handleAddToCart(product, quantity)}
+                          isRecentlyPurchased={true}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
           {/* Popular Categories Section */}
           {products.length > 0 && (
-            <div className="px-6 pt-4 pb-8">
+            <div className="px-6 pt-4 pb-8 desktop:px-8 desktop:pt-12">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Popular Categories</h2>
-                <div className="flex gap-2">
+                <h2 className="text-2xl desktop:text-3xl font-bold text-gray-800">Popular Categories</h2>
+                <div className="flex gap-2 desktop:hidden">
                   <button
                     onClick={scrollPrev}
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    className="p-2 rounded-full bg-accent-ivory hover:bg-secondary transition-colors"
                     aria-label="Previous categories"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -371,7 +454,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={scrollNext}
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    className="p-2 rounded-full bg-accent-ivory hover:bg-secondary transition-colors"
                     aria-label="Next categories"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,17 +464,36 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="overflow-hidden" ref={emblaRef}>
+              {/* Desktop grid layout for categories */}
+              <div className="hidden desktop:grid desktop:grid-cols-6 gap-6 mb-8">
+                {productCategories.slice(1, productCategories.length).map((category) => ( 
+                  <div key={category.id} className="mx-auto w-full">
+                    <div className="bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-card-hover transition-all duration-300 cursor-pointer group h-full transform hover:scale-105">
+                      <div className="aspect-square bg-gray-100 relative overflow-hidden">
+                        <div className="absolute inset-0 flex items-center justify-center bg-accent-green/10 group-hover:bg-accent-green/20 transition-colors">
+                          <span className="text-accent-green font-medium text-lg">{category.name.charAt(0)}</span>
+                        </div>
+                      </div>
+                      <div className="p-3 text-center">
+                        <h3 className="font-medium text-gray-800">{category.name}</h3>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Mobile carousel for categories */}
+              <div className="desktop:hidden overflow-hidden" ref={emblaRef}>
                 <div className="flex gap-4">
                   {productCategories.slice(1, productCategories.length).map((category) => ( 
                     <div 
                       key={category.id}
                       className="flex-[0_0_calc(50%-0.5rem)] sm:flex-[0_0_calc(33.333%-0.75rem)] md:flex-[0_0_calc(25%-0.75rem)] lg:flex-[0_0_calc(16.666%-0.75rem)] px-2 mx-auto"
                     >
-                      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
+                      <div className="bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
                         <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center bg-choco-greenbtn/10 group-hover:bg-choco-greenbtn/20 transition-colors">
-                            <span className="text-choco-greenbtn font-medium text-lg">{category.name.charAt(0)}</span>
+                          <div className="absolute inset-0 flex items-center justify-center bg-accent-green/10 group-hover:bg-accent-green/20 transition-colors">
+                            <span className="text-accent-green font-medium text-lg">{category.name.charAt(0)}</span>
                           </div>
                         </div>
                         <div className="p-3 text-center">
@@ -406,13 +508,13 @@ export default function Home() {
           )}
 
           {/* Products Section */}
-          <div className="px-6 pt-4 flex flex-col pb-8">
+          <div className="px-6 pt-4 flex flex-col pb-8 desktop:px-8 desktop:pt-12">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Products</h2>
-              <div className="flex gap-2">
+              <h2 className="text-2xl desktop:text-3xl font-bold text-primary-dark">Featured Products</h2>
+              <div className="flex gap-2 desktop:hidden">
                 <button
                   onClick={scrollProductsPrev}
-                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="p-2 rounded-full bg-accent-ivory hover:bg-secondary transition-colors"
                   aria-label="Previous products"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -421,7 +523,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={scrollProductsNext}
-                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="p-2 rounded-full bg-accent-ivory hover:bg-secondary transition-colors"
                   aria-label="Next products"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -431,7 +533,20 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="overflow-hidden py-1" ref={productsEmblaRef}>
+            {/* Desktop grid layout for products */}
+            <div className="hidden desktop:grid desktop:grid-cols-4 wide:grid-cols-5 gap-6 mb-8">
+              {products.slice(0, 8).map((product) => (
+                <div key={product.id} className="transform transition-all hover:scale-[1.02]">
+                  <DisplayCard 
+                    product={product} 
+                    onAddToCart={(quantity) => handleAddToCart(product, quantity)} 
+                  />
+                </div>
+              ))}
+            </div>
+            
+            {/* Mobile carousel for products */}
+            <div className="desktop:hidden overflow-hidden py-1" ref={productsEmblaRef}>
               <div className="flex gap-4">
                 {products.map((product) => (
                   <div 
@@ -448,7 +563,7 @@ export default function Home() {
             </div>
             
             <div className="flex justify-center items-center py-4">
-                <button onClick={() => router.push('/products')} className="bg-choco-greenbtn text-white px-4 py-1 rounded-md">
+                <button onClick={() => router.push('/products')} className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
                     See More
                 </button>
             </div>

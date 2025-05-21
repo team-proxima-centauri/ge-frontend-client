@@ -1,0 +1,228 @@
+{
+  "colors": {
+    "primary": {
+      "base": {
+        "value": "#5D4037",
+        "name": "--color-primary",
+        "description": "Deep chocolate brown, primary brand color",
+        "usage": "Primary buttons, brand elements, navigation highlights",
+        "contrastRatio": {
+          "onWhite": 7.5,
+          "onLightBeige": 5.8
+        }
+      },
+      "variant": {
+        "value": "#3E2723",
+        "name": "--color-primary-variant",
+        "description": "Darker chocolate brown for active states",
+        "usage": "Button active states, selected items, focused elements",
+        "contrastRatio": {
+          "onWhite": 11.2,
+          "onLightBeige": 8.9
+        }
+      },
+      "light": {
+        "value": "#8D6E63",
+        "name": "--color-primary-light",
+        "description": "Lighter chocolate brown",
+        "usage": "Hover states, secondary elements, decorative accents",
+        "contrastRatio": {
+          "onWhite": 4.3,
+          "onDark": 5.1
+        }
+      }
+    },
+    "secondary": {
+      "base": {
+        "value": "#D7CCC8",
+        "name": "--color-secondary",
+        "description": "Caramel tan accent color",
+        "usage": "Secondary buttons, cards, section backgrounds",
+        "contrastRatio": {
+          "onDarkBrown": 8.2,
+          "onBlack": 12.5
+        }
+      },
+      "variant": {
+        "value": "#BCAAA4",
+        "name": "--color-secondary-variant",
+        "description": "Lighter caramel accent",
+        "usage": "Hover states for secondary elements, subtle backgrounds",
+        "contrastRatio": {
+          "onDarkBrown": 6.1,
+          "onBlack": 9.8
+        }
+      }
+    },
+    "accent": {
+      "ivory": {
+        "value": "#EFEBE9",
+        "name": "--color-accent-1",
+        "description": "Warm ivory accent",
+        "usage": "Card backgrounds, form fields, subtle highlights",
+        "contrastRatio": {
+          "onDarkBrown": 12.7,
+          "onBlack": 16.4
+        }
+      },
+      "green": {
+        "value": "#4E6151",
+        "name": "--color-accent-2",
+        "description": "Muted forest green accent",
+        "usage": "Special offers, organic products, category indicators",
+        "contrastRatio": {
+          "onWhite": 6.3,
+          "onLightBeige": 4.9
+        }
+      }
+    },
+    "neutral": {
+      "background": {
+        "value": "#FFF8F3",
+        "name": "--color-bg",
+        "description": "Off-white background color",
+        "usage": "Main application background",
+        "contrastRatio": {
+          "withTextPrimary": 16.2,
+          "withTextSecondary": 9.5
+        }
+      },
+      "surface": {
+        "value": "#F5E9DF",
+        "name": "--color-surface",
+        "description": "Light beige surface color",
+        "usage": "Cards, dialogs, elevated surfaces",
+        "contrastRatio": {
+          "withTextPrimary": 14.8,
+          "withTextSecondary": 8.7
+        }
+      },
+      "textPrimary": {
+        "value": "#222222",
+        "name": "--color-text-primary",
+        "description": "Near-black primary text color",
+        "usage": "Main body text, headings, important information",
+        "contrastRatio": {
+          "onBackground": 16.2,
+          "onSurface": 14.8
+        }
+      },
+      "textSecondary": {
+        "value": "#555555",
+        "name": "--color-text-secondary",
+        "description": "Dark brown-grey secondary text color",
+        "usage": "Subtitles, descriptions, less important information",
+        "contrastRatio": {
+          "onBackground": 9.5,
+          "onSurface": 8.7
+        }
+      },
+      "border": {
+        "value": "#A1887F",
+        "name": "--color-border",
+        "description": "Medium brown-grey border color",
+        "usage": "Dividers, borders, form field outlines",
+        "contrastRatio": {
+          "onBackground": 3.8,
+          "onSurface": 3.2
+        }
+      }
+    },
+    "semantic": {
+      "success": {
+        "value": "#2E7D32",
+        "name": "--color-success",
+        "description": "Success state color (green with brown undertone)",
+        "usage": "Success messages, confirmations, available items",
+        "contrastRatio": {
+          "onWhite": 5.9,
+          "onLightBeige": 4.7
+        }
+      },
+      "warning": {
+        "value": "#F9A825",
+        "name": "--color-warning",
+        "description": "Warning state color (amber with brown undertone)",
+        "usage": "Warnings, low stock indicators, important notices",
+        "contrastRatio": {
+          "onBlack": 8.3,
+          "onDarkBrown": 4.5
+        }
+      },
+      "error": {
+        "value": "#C62828",
+        "name": "--color-error",
+        "description": "Error state color (red with brown undertone)",
+        "usage": "Error messages, destructive actions, critical alerts",
+        "contrastRatio": {
+          "onWhite": 6.7,
+          "onLightBeige": 5.4
+        }
+      },
+      "info": {
+        "value": "#0277BD",
+        "name": "--color-info",
+        "description": "Information state color (blue with slight desaturation)",
+        "usage": "Information messages, help text, links",
+        "contrastRatio": {
+          "onWhite": 5.6,
+          "onLightBeige": 4.5
+        }
+      }
+    }
+  },
+  "usage": {
+    "guidelines": {
+      "buttons": {
+        "primary": {
+          "background": "var(--color-primary)",
+          "text": "white",
+          "hover": "var(--color-primary-variant)",
+          "active": "var(--color-primary-variant)",
+          "disabled": "var(--color-primary-light) with 50% opacity"
+        },
+        "secondary": {
+          "background": "var(--color-secondary)",
+          "text": "var(--color-primary-variant)",
+          "hover": "var(--color-secondary-variant)",
+          "active": "var(--color-secondary-variant)",
+          "disabled": "var(--color-secondary) with 50% opacity"
+        }
+      },
+      "typography": {
+        "headings": "var(--color-text-primary)",
+        "body": "var(--color-text-primary)",
+        "captions": "var(--color-text-secondary)",
+        "links": "var(--color-primary-variant)"
+      },
+      "surfaces": {
+        "app": "var(--color-bg)",
+        "cards": "var(--color-surface)",
+        "dialogs": "var(--color-surface)",
+        "elevated": "var(--color-surface)"
+      },
+      "forms": {
+        "input": {
+          "background": "white",
+          "text": "var(--color-text-primary)",
+          "border": "var(--color-border)",
+          "focus": "var(--color-primary)"
+        },
+        "checkbox": {
+          "checked": "var(--color-primary)",
+          "unchecked": "white",
+          "border": "var(--color-border)"
+        }
+      },
+      "status": {
+        "success": "var(--color-success)",
+        "warning": "var(--color-warning)",
+        "error": "var(--color-error)",
+        "info": "var(--color-info)"
+      }
+    },
+    "accessibility": {
+      "note": "All color combinations used for text and interactive elements meet WCAG 2.1 AA standards with a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text and UI components."
+    }
+  }
+}

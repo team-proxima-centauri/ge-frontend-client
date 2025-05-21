@@ -68,12 +68,12 @@ export default function SignUp() {
   };
 
   return (
-    <div className="relative min-h-screen flex bg-gradient-to-br from-choco-sidebar to-choco-primary">
+    <div className="relative min-h-screen flex bg-gradient-to-br from-groceryease-bg to-accent-ivory">
       <div className="m-auto w-full max-w-md p-8">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-groceryease-surface rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-choco-primary mb-2">Create Account</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">Create Account</h1>
             <p className="text-gray-600">Join the Groceryease Community</p>
           </div>
 
@@ -180,7 +180,7 @@ export default function SignUp() {
             {/* Sign Up Button */}
             <button
               type="submit"
-              className="w-full bg-choco-primary text-white py-3 rounded-lg hover:bg-choco-primary/90 transition-colors font-semibold"
+              className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-semibold"
               disabled={isLoading}
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}
@@ -191,7 +191,7 @@ export default function SignUp() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
-              <a href="/login" className="text-choco-primary hover:text-choco-primary/80 transition-colors font-semibold">
+              <a href="/login" className="text-primary-dark hover:text-primary transition-colors font-semibold">
                 Sign in
               </a>
             </p>

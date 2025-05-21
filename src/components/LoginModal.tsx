@@ -41,7 +41,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md relative">
+      <div className="bg-groceryease-surface rounded-2xl shadow-xl w-full max-w-md relative">
         <button 
           onClick={onClose} 
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition-colors"
@@ -52,7 +52,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
         
         {/* Header */}
         <div className="text-center pt-8 pb-4 px-8">
-          <h2 className="text-3xl font-bold text-choco-primary mb-2">Welcome Back</h2>
+          <h2 className="text-3xl font-bold text-primary mb-2">Welcome Back</h2>
           <p className="text-gray-600">Sign in to your account</p>
         </div>
         
@@ -72,7 +72,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
-              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-choco-primary focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-lg border border-groceryease-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-accent-ivory"
             />
           </div>
 
@@ -89,7 +89,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isLoading}
-              className="w-full pl-10 pr-12 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-choco-primary focus:border-transparent transition-all"
+              className="w-full pl-10 pr-12 py-3 rounded-lg border border-groceryease-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-accent-ivory"
             />
             <button
               type="button"
@@ -108,7 +108,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-choco-primary text-white py-3 rounded-lg hover:bg-choco-primary/90 transition-colors font-semibold"
+            className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-semibold"
           >
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
@@ -117,7 +117,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onClose 
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600">
               Don&apos;t have an account?{' '}
-              <a href="/signup" className="text-choco-primary hover:text-choco-primary/80 transition-colors font-semibold">
+              <a href="/signup" className="text-primary-dark hover:text-primary transition-colors font-semibold">
                 Sign up
               </a>
             </p>

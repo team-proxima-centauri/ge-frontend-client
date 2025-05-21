@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Sidebar } from "@/components/Sidebar";
-import { HomeIcon, PackageIcon, ShoppingCart, Award, Info, Filter, PanelLeft, LogIn, LogOut, ArrowUpDown } from "lucide-react";
-import { Avatar } from "@/components/Avatar";
+import { HomeIcon, PackageIcon, ShoppingCart, Award, Info, Filter, PanelLeft, LogIn, LogOut, ArrowUpDown, User as UserIcon, ChevronRight } from "lucide-react";
 import { Divider } from "@/components/Divider";
-import { Cart } from "@/components/Cart";
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { User, CartItem } from '@/services/api';
+import { formatPrice } from '@/utils/priceUtils';
 
 interface HeaderProps {
   currentUser: User | null;
@@ -79,41 +79,250 @@ export const Header: React.FC<HeaderProps> = ({
   const pathname = usePathname();   
   // Client-side state that won't affect server rendering
   const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   // Cart is now handled by the Cart component
   
   // State to track if we're on client-side to avoid hydration issues
   const [isClient, setIsClient] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
   
   // Set isClient to true after component mounts
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    
+    // Add event listener for Escape key to close sidebars
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (leftOpen) setLeftOpen(false);
+        if (rightOpen) setRightOpen(false);
+        if (filterOpen) setFilterOpen(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscKey);
+    return () => window.removeEventListener('keydown', handleEscKey);
+  }, [leftOpen, rightOpen, filterOpen]);
+
+  // Function to handle cart toggle in both mobile and desktop views
+  const handleCartToggle = () => {
+    setRightOpen(!rightOpen);
+  };
 
   return (
     <>
+      {/* Skip to main content link for keyboard users */}
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+      
+      {/* Desktop Header - Only visible on desktop screens (≥1024px) */}
+      <header className="hidden desktop:flex items-center justify-between px-8 py-4 bg-primary text-white shadow-md sticky top-0 z-30">
+        {/* Logo & Brand */}
+        <div className="flex items-center space-x-2">
+          <h1 className="text-xl font-semibold">GroceryEase</h1>
+        </div>
+        
+        {/* Main Navigation */}
+        <nav className="flex items-center space-x-6">
+          {NavMenu.map((item) => (
+            <Link 
+              key={item.id} 
+              href={item.href}
+              className={`
+                flex items-center px-3 py-2 rounded-lg 
+                transition-colors duration-200
+                hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary
+                ${pathname === item.href ? 'bg-primary-dark text-secondary' : 'text-white'}
+              `}
+              aria-current={pathname === item.href ? 'page' : undefined}
+            >
+              <item.icon className="w-5 h-5 mr-2" aria-hidden="true" />
+              <span>{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+        
+        {/* Cart & Profile */}
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <button 
+              onClick={handleCartToggle}
+              className="relative p-2 rounded-full hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+              aria-label="Shopping cart"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-status-error text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+          </div>
+          
+          <div className="relative">
+            {isClient && currentUser ? (
+              <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-dark">
+                <div className="h-8 w-8 rounded-full bg-secondary-light flex items-center justify-center text-primary">
+                  <UserIcon className="w-5 h-5" />
+                </div>
+                <span className="hidden desktop:block">{currentUser.name}</span>
+                <button 
+                  onClick={onLogoutClick}
+                  className="ml-2 text-sm underline hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary rounded"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={onLoginClick}
+                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+              >
+                <span>Sign In</span>
+                <LogIn className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+      
+      {/* Single Mobile header - Only visible on mobile/tablet devices (<1024px) */}
+      <header className="block desktop:hidden sticky top-0 z-30 bg-primary text-white shadow-md">
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={() => setLeftOpen(!leftOpen)}
+            className="p-2 rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+            aria-label="Open menu"
+          >
+            <PanelLeft className="h-6 w-6" />
+          </button>
+          
+          <h1 className="text-xl font-semibold">GroceryEase</h1>
+          
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setFilterOpen(!filterOpen)}
+              className={`p-2 rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary ${pathname === "/products" ? "" : "hidden"}`}
+              aria-label="Filter products"
+            >
+              <Filter className="h-6 w-6" />
+            </button>
+            <button
+              onClick={handleCartToggle}
+              className="relative p-2 rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+              aria-label="Cart"
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-status-error text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+      
+      {/* RIGHT SIDEBAR for Cart */}
+      <Sidebar 
+        isOpen={rightOpen} 
+        toggleSidebar={() => setRightOpen(!rightOpen)}
+        side="right"
+        aria-label="Shopping Cart"
+      >
+        <div className="flex justify-between items-center p-4 border-b border-groceryease-border bg-groceryease-bg">
+          <h2 className="text-xl font-semibold text-primary">{pathname === "/group-order" ? 'Group Cart' : 'Your Cart'}</h2>
+          <button
+            onClick={() => setRightOpen(false)}
+            className="p-2 text-gray-700 rounded-full hover:bg-accent-ivory transition-all duration-300 focus-ring"
+            aria-label="Close cart"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </div>
+        
+        <div className="flex-1 overflow-auto">
+          {cartItems.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="w-16 h-16 bg-accent-ivory rounded-full flex items-center justify-center mb-4">
+                <ShoppingCart className="h-8 w-8 text-primary" />
+              </div>
+              <p className="text-gray-700">Your cart is empty</p>
+              <p className="text-sm text-gray-500 mt-2">Add items to get started</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-groceryease-border">
+              {cartItems.map(item => (
+                <div key={item.id} className="p-4 flex justify-between items-center">
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 bg-accent-ivory rounded flex-shrink-0 mr-3"></div>
+                    <div>
+                      <p className="font-medium text-gray-800">{item.name}</p>
+                      <p className="text-sm text-primary-dark">${formatPrice(item.price)}</p>
+                      {pathname === "/group-order" && item.added_by && (
+                        <p className="text-xs text-primary">Added by: {item.added_by === currentUser?.id ? 'You' : item.added_by}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <button 
+                      onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                      className="w-6 h-6 flex items-center justify-center border border-groceryease-border rounded-l"
+                    >
+                      -
+                    </button>
+                    <span className="w-8 h-6 flex items-center justify-center border-t border-b border-groceryease-border">
+                      {item.quantity}
+                    </span>
+                    <button 
+                      onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                      className="w-6 h-6 flex items-center justify-center border border-groceryease-border rounded-r"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {cartItems.length > 0 && (
+          <div className="p-4 border-t border-groceryease-border bg-accent-ivory/50">
+            <div className="flex justify-between mb-4">
+              <span className="font-medium">Total:</span>
+              <span className="font-bold text-primary">${formatPrice(cartItems.reduce((total, item) => total + (item.price * item.quantity), 0))}</span>
+            </div>
+            <button
+              onClick={onCheckout}
+              className="w-full bg-primary text-white py-2 px-4 rounded-md font-medium hover:bg-primary-dark transition-colors"
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        )}
+      </Sidebar>
+
       {/* Navigation Sidebar; LEFT SIDEBAR */}
       <Sidebar 
         isOpen={leftOpen} 
         toggleSidebar={() => setLeftOpen(!leftOpen)}
+        aria-label="Main navigation"
       >
         <div className="flex justify-between items-center p-4">
           <h1 className="text-xl font-semibold">GroceryEase</h1>
           <button
             onClick={() => setLeftOpen(!leftOpen)}
-            className="p-2 text-black rounded-full transition-all duration-300"
-            aria-label="Toggle Navigation Sidebar"
+            className="p-2 text-black rounded-full transition-all duration-300 focus-ring"
+            aria-label="Close navigation menu"
           >
-            <PanelLeft className="h-6 w-6" />
           </button>
         </div>
         {/* User Profile Section */}
         <div className="mb-6 mt-2">
-          <div className="flex items-center p-4 bg-white/50 rounded-lg shadow-sm">
-            <Avatar 
-              size="lg" 
-              name={isClient ? (currentUser ? currentUser.name : 'Guest') : 'Guest'} 
-            />
+          <div className="flex items-center p-4 bg-white/50 rounded-lg shadow-sm animate-fade-in">
+            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white" aria-hidden="true">
+              <UserIcon className="icon-lg" />
+            </div>
             
             <div className="ml-4 flex-1 min-w-0">
               <h2 className="text-lg font-semibold text-gray-800 capitalize truncate">
@@ -130,17 +339,27 @@ export const Header: React.FC<HeaderProps> = ({
         
         {/* Navigation Menu */}
         <div className="mb-6">
-          <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Main Menu</h3>
-          <nav className="space-y-1">
+          <h3 id="main-nav-heading" className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Main Menu</h3>
+          <nav className="space-y-1" aria-labelledby="main-nav-heading" ref={navRef}>
             {NavMenu.map((item) => (
-              <a 
+              <Link 
                 key={item.id} 
                 href={item.href} 
-                className={`flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-white/70 hover:text-choco-greenbtn transition-all group ${pathname === item.href ? 'bg-choco-selected text-primary' : ''}`}
+                className={`
+                  flex items-center px-4 py-3 text-gray-700 rounded-lg 
+                  hover:bg-accent-ivory hover:text-primary 
+                  focus:outline-none focus:ring-2 focus:ring-primary focus:bg-accent-ivory
+                  transition-all group 
+                  ${pathname === item.href ? 'bg-secondary text-primary-dark' : ''}
+                `}
+                aria-current={pathname === item.href ? 'page' : undefined}
               >
-                <item.icon className="h-5 w-5 mr-3 text-gray-500 group-hover:text-choco-greenbtn transition-colors" />
+                <item.icon className="icon-sm mr-3 text-gray-500 group-hover:text-primary transition-colors" aria-hidden="true" />
                 <span className="text-base font-medium">{item.name}</span>
-              </a>
+                {pathname === item.href && (
+                  <ChevronRight className="icon-sm ml-auto" aria-hidden="true" />
+                )}
+              </Link>
             ))}
           </nav>
         </div>
@@ -152,24 +371,46 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Always render both buttons but conditionally show/hide them based on client-side authentication */}
             <button 
               onClick={onLogoutClick} 
-              className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-white text-pink-500 border border-pink-500 rounded-lg hover:bg-pink-500 hover:text-white transition-colors font-medium ${isClient && currentUser ? 'block' : 'hidden'}`}
+              className={`
+                flex w-full items-center justify-center gap-2 px-4 py-2.5 
+                bg-accent-ivory text-primary border border-primary rounded-lg 
+                hover:bg-primary hover:text-white 
+                focus:outline-none focus:ring-2 focus:ring-primary
+                transition-all duration-300 font-medium 
+                ${isClient && currentUser ? 'block animate-fade-in' : 'hidden'}
+              `}
+              aria-label="Sign out of your account"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="icon-sm" aria-hidden="true" />
               <span>{isClient ? 'Sign Out' : 'Loading...'}</span>
             </button>
             
             <button 
               onClick={onLoginClick} 
-              className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors font-medium ${isClient && !currentUser ? 'block' : 'hidden'}`}
+              className={`
+                flex w-full items-center justify-center gap-2 px-4 py-2.5 
+                bg-primary text-white rounded-lg 
+                hover:bg-primary-dark 
+                focus:outline-none focus:ring-2 focus:ring-white
+                transition-all duration-300 font-medium 
+                ${isClient && !currentUser ? 'block animate-fade-in' : 'hidden'}
+              `}
+              aria-label="Sign in to your account"
             >
-              <LogIn className="h-5 w-5" />
+              <LogIn className="icon-sm" aria-hidden="true" />
               <span>{isClient ? 'Sign In' : 'Loading...'}</span>
             </button>
             
             {/* This placeholder button will only show during server-side rendering */}
             <button 
-              className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-pink-500 text-white rounded-lg transition-colors font-medium ${isClient ? 'hidden' : 'block'}`}
+              className={`
+                flex w-full items-center justify-center gap-2 px-4 py-2.5 
+                bg-primary text-white rounded-lg 
+                transition-colors font-medium 
+                ${isClient ? 'hidden' : 'block'}
+              `}
               disabled
+              aria-hidden="true"
             >
               <span>Loading...</span>
             </button>
@@ -199,7 +440,7 @@ export const Header: React.FC<HeaderProps> = ({
             <h3 className="font-medium text-gray-700">Categories</h3>
             <button 
               onClick={() => onShowFiltersChange(!showFilters)}
-              className="text-sm text-choco-greenbtn hover:underline"
+              className="text-sm text-primary-dark hover:underline"
             >
               {showFilters ? 'Hide' : 'Show All'}
             </button>
@@ -296,14 +537,14 @@ export const Header: React.FC<HeaderProps> = ({
               onApplyFilters();
               setFilterOpen(false);
             }}
-            className="w-full bg-choco-greenbtn text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-choco-greenbtn"
+            className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           >
             Apply Filters
           </button>
           
           <button
             onClick={onResetFilters}
-            className="w-full mt-2 bg-white text-gray-700 py-2 px-4 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            className="w-full mt-2 bg-accent-ivory text-gray-700 py-2 px-4 rounded-md border border-groceryease-border hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light"
           >
             Reset Filters
           </button>
@@ -312,33 +553,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Cart is now a standalone component */}
 
-      {/* Main Header */}
-      <div className="sticky top-0 z-40 flex justify-between items-center p-4 bg-white shadow-md">
-        <button
-          onClick={() => setLeftOpen(!leftOpen)}
-          className="p-2 text-black rounded-full transition-all duration-300"
-          aria-label="Toggle Navigation Sidebar"
-        >
-          <PanelLeft className="h-6 w-6" />
-        </button>
-        <h1 className="text-2xl font-bold text-gray-800">GroceryEase</h1>
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setFilterOpen(!filterOpen)}
-            className={`p-2 text-black rounded-full transition-all duration-300 relative ${pathname === "/products" ? "" : "hidden"}`}
-            aria-label="Toggle Filter Sidebar"
-          >
-            <Filter className="h-6 w-6" />
-          </button>
-          {/* Use the new Cart component - shown on all pages */}
-          <Cart 
-            cartItems={cartItems}
-            onUpdateQuantity={onUpdateQuantity}
-            onCheckout={onCheckout}
-            isGroup={pathname === "/group-order"}
-          />
-        </div>
-      </div>
+      {/* No second mobile header needed */}
     </>
   );
 }; 

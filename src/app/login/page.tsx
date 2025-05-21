@@ -39,12 +39,12 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen flex bg-gradient-to-br from-choco-sidebar to-choco-primary">
+    <div className="relative min-h-screen flex bg-gradient-to-br from-groceryease-bg to-accent-ivory">
       <div className="m-auto w-full max-w-md p-8">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-groceryease-surface rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-choco-primary mb-2">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
             <p className="text-gray-600">Sign in to your account</p>
           </div>
 
@@ -69,7 +69,7 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-choco-primary focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-groceryease-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
             </div>
 
@@ -85,7 +85,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                className="w-full pl-10 pr-12 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-choco-primary focus:border-transparent transition-all"
+                className="w-full pl-10 pr-12 py-3 rounded-lg border border-groceryease-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
               <button
                 type="button"
@@ -103,10 +103,10 @@ export default function Login() {
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <label className="flex items-center">
-                <input type="checkbox" className="rounded border-gray-300 text-choco-primary focus:ring-choco-primary" />
+                <input type="checkbox" className="rounded border-groceryease-border text-primary focus:ring-primary" />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
-              <a href="#" className="text-sm text-choco-primary hover:text-choco-primary/80 transition-colors">
+              <a href="#" className="text-sm text-primary-dark hover:text-primary transition-colors">
                 Forgot password?
               </a>
             </div>
@@ -114,7 +114,7 @@ export default function Login() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-choco-primary text-white py-3 rounded-lg hover:bg-choco-primary/90 transition-colors font-semibold"
+              className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-semibold"
               disabled={isLoading}
             >
               {isLoading ? "Signing In..." : "Sign In"}
@@ -125,7 +125,7 @@ export default function Login() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don&apos;t have an account?{' '}
-              <a href="/signup" className="text-choco-primary hover:text-choco-primary/80 transition-colors font-semibold">
+              <a href="/signup" className="text-primary-dark hover:text-primary transition-colors font-semibold">
                 Sign up
               </a>
             </p>
