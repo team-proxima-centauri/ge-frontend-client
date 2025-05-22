@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Sidebar } from "@/components/Sidebar";
-import { HomeIcon, PackageIcon, ShoppingCart, Award, Info, Filter, PanelLeft, LogIn, LogOut, ArrowUpDown, User as UserIcon, ChevronRight } from "lucide-react";
+import { HomeIcon, PackageIcon, ShoppingCart, Award, Info, Filter, PanelLeft, LogIn, LogOut, ArrowUpDown, User as UserIcon, ChevronRight, ChevronDown } from "lucide-react";
 import { Divider } from "@/components/Divider";
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { User, CartItem } from '@/services/api';
 import { formatPrice } from '@/utils/priceUtils';
+import router from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface HeaderProps {
   currentUser: User | null;
@@ -77,10 +79,12 @@ export const Header: React.FC<HeaderProps> = ({
   onPriceRangeChange,
 }) => {
   const pathname = usePathname();   
+  const router = useRouter();
   // Client-side state that won't affect server rendering
   const [leftOpen, setLeftOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   // Cart is now handled by the Cart component
   
   // State to track if we're on client-side to avoid hydration issues
@@ -115,10 +119,10 @@ export const Header: React.FC<HeaderProps> = ({
       <a href="#main-content" className="skip-link">Skip to main content</a>
       
       {/* Desktop Header - Only visible on desktop screens (≥1024px) */}
-      <header className="hidden desktop:flex items-center justify-between px-8 py-4 bg-primary text-white shadow-md sticky top-0 z-30">
+      <header className="hidden desktop:flex items-center justify-between px-8 py-4 bg-primary text-white shadow-md sticky top-0 z-50">
         {/* Logo & Brand */}
         <div className="flex items-center space-x-2">
-          <h1 className="text-xl font-semibold">GroceryEase</h1>
+          <h1 onClick={() => router.push("/")} className="cursor-pointer text-xl text-white font-roboto font-semibold">GroceryEase</h1>
         </div>
         
         {/* Main Navigation */}
@@ -130,13 +134,13 @@ export const Header: React.FC<HeaderProps> = ({
               className={`
                 flex items-center px-3 py-2 rounded-lg 
                 transition-colors duration-200
-                hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary
+                hover:text-secondary active:scale-95 focus:outline-none focus:ring-2 focus:ring-secondary
                 ${pathname === item.href ? 'bg-primary-dark text-secondary' : 'text-white'}
               `}
               aria-current={pathname === item.href ? 'page' : undefined}
             >
               <item.icon className="w-5 h-5 mr-2" aria-hidden="true" />
-              <span>{item.name}</span>
+              <span className='hidden desktop:block desktop:text-xs truncate'>{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -146,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative">
             <button 
               onClick={handleCartToggle}
-              className="relative p-2 rounded-full hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+              className={`relative p-2 rounded-full hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary ${pathname === "/checkout" ? "hidden" : ""}`}
               aria-label="Shopping cart"
             >
               <ShoppingCart className="w-6 h-6" />
@@ -160,17 +164,42 @@ export const Header: React.FC<HeaderProps> = ({
           
           <div className="relative">
             {isClient && currentUser ? (
-              <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-dark">
-                <div className="h-8 w-8 rounded-full bg-secondary-light flex items-center justify-center text-primary">
-                  <UserIcon className="w-5 h-5" />
-                </div>
-                <span className="hidden desktop:block">{currentUser.name}</span>
+              <div className="relative">
                 <button 
-                  onClick={onLogoutClick}
-                  className="ml-2 text-sm underline hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary rounded"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="group flex items-center space-x-2 hover:bg-primary-dark p-2 rounded-lg transition-colors"
                 >
-                  Sign Out
+                  <div className="rounded-full bg-secondary-light flex items-center justify-center text-primary p-1">
+                    <UserIcon className="size-4" />
+                  </div>
+                  <span className="hidden  wide:block text-sm truncate">{currentUser.name}</span>
+                  <ChevronDown className={`size-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
+
+                {/* Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-choco-primary/10 py-1 z-50">
+                    <div className="wide:hidden px-4 py-2 border-b border-choco-primary/10">
+                      <p className="text-sm font-medium text-primary">{currentUser.name}</p>
+                      <p className="text-xs text-groceryease-textSecondary truncate">{currentUser.email}</p>
+                    </div>
+                    <button 
+                      onClick={() => router.push("/profile")}
+                      className="w-full text-left px-4 py-2 text-sm text-primary hover:text-primary-dark transition-colors"
+                    >
+                      Profile Settings
+                    </button>
+                    <button 
+                      onClick={() => {
+                        onLogoutClick();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <button 
@@ -186,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
       </header>
       
       {/* Single Mobile header - Only visible on mobile/tablet devices (<1024px) */}
-      <header className="block desktop:hidden sticky top-0 z-30 bg-primary text-white shadow-md">
+      <header className="block desktop:hidden sticky top-0 z-50 bg-primary text-white shadow-md">
         <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={() => setLeftOpen(!leftOpen)}
@@ -196,7 +225,7 @@ export const Header: React.FC<HeaderProps> = ({
             <PanelLeft className="h-6 w-6" />
           </button>
           
-          <h1 className="text-xl font-semibold">GroceryEase</h1>
+          <h1 onClick={() => router.push("/")} className="cursor-pointer text-xl text-white font-semibold">GroceryEase</h1>
           
           <div className="flex items-center gap-2">
             <button 
@@ -208,7 +237,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
             <button
               onClick={handleCartToggle}
-              className="relative p-2 rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+              className={`relative p-2 rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary ${pathname === "/checkout" ? "hidden" : ""}`}
               aria-label="Cart"
             >
               <ShoppingCart className="h-6 w-6" />
@@ -312,33 +341,34 @@ export const Header: React.FC<HeaderProps> = ({
           <h1 className="text-xl font-semibold">GroceryEase</h1>
           <button
             onClick={() => setLeftOpen(!leftOpen)}
-            className="p-2 text-black rounded-full transition-all duration-300 focus-ring"
+            className="p-2 text-choco-primary rounded-full transition-all duration-300 focus-ring"
             aria-label="Close navigation menu"
           >
+            <PanelLeft className="h-6 w-6" />
           </button>
         </div>
         {/* User Profile Section */}
         <div className="mb-6 mt-2">
-          <div className="flex items-center p-4 bg-white/50 rounded-lg shadow-sm animate-fade-in">
-            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white" aria-hidden="true">
+          <button onClick={() => router.push("/profile")} className="flex w-full items-center p-2 bg-white rounded-lg shadow-sm animate-fade-in">
+            <div className="w-10 h-10 p-1 rounded-full bg-primary flex items-center justify-center text-white" aria-hidden="true">
               <UserIcon className="icon-lg" />
             </div>
             
-            <div className="ml-4 flex-1 min-w-0">
-              <h2 className="text-lg font-semibold text-gray-800 capitalize truncate">
+            <div className="ml-2 flex-1 min-w-0">
+              <h2 className="text-lg text-left font-semibold text-gray-800 capitalize truncate">
                 {isClient ? (currentUser ? currentUser.name : 'Guest User') : 'Guest User'}
               </h2>
-              <p className="text-sm text-gray-500 truncate">
+              <p className="text-sm text-left text-gray-500 truncate">
                 {isClient ? (currentUser ? currentUser.email : 'Sign in to your account') : 'Sign in to your account'}
               </p>
             </div>
-          </div>
+          </button>
         </div>
         
         <Divider />
         
         {/* Navigation Menu */}
-        <div className="mb-6">
+        <div className="mb-6 py-2 pt-6">
           <h3 id="main-nav-heading" className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Main Menu</h3>
           <nav className="space-y-1" aria-labelledby="main-nav-heading" ref={navRef}>
             {NavMenu.map((item) => (

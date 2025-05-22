@@ -42,7 +42,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
         className={`
           m-auto flex px-2 flex-col bg-groceryease-surface rounded-xl overflow-hidden shadow-sm 
           transition-all duration-300 
-          ${isMobile ? 'w-[85vw] aspect-[1/1.2]' : 'h-[20rem] w-[24rem]'}
+          ${isMobile ? 'w-[85vw] aspect-[1/1.2]' : 'h-[95%] desktop:w-[95%]'}
           ${isSelected ? 'ring-2 ring-primary' : ''}
           ${isMobile ? 'active:shadow-md' : 'hover:shadow-md'}
         `}

@@ -74,6 +74,8 @@ const GroupOrderPage = () => {
         } else {
             console.log('Proceeding to checkout with user:', currentUser);
             alert('Proceeding to checkout!');
+            router.push('/checkout');
+
         }
     };
 

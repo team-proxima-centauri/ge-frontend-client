@@ -1,4 +1,4 @@
-// File: C:\Projects\project-ge\ge-frontend-client\src\app\layout.tsx
+// File: C:\Users\renzo\Desktop\dev\ge-frontend-client\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

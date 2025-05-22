@@ -1,127 +1,46 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { AlertCircle, CheckCircle, Info, X, AlertTriangle } from 'lucide-react';
-
-type ToastType = 'success' | 'error' | 'info' | 'warning';
+import { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 interface ToastProps {
-  type: ToastType;
   message: string;
-  duration?: number; // in milliseconds
-  onClose?: () => void;
-  isVisible: boolean;
+  type?: 'success' | 'error' | 'info';
+  onClose: () => void;
+  duration?: number;
 }
 
-/**
- * Toast component - Accessible notification component
- */
-const Toast: React.FC<ToastProps> = ({
-  type,
+export const Toast: React.FC<ToastProps> = ({
   message,
-  duration = 5000,
+  type = 'success',
   onClose,
-  isVisible,
+  duration = 3000,
 }) => {
-  const [isExiting, setIsExiting] = useState(false);
-
-  // Auto-dismiss toast after duration
   useEffect(() => {
-    if (!isVisible || !duration) return;
-    
     const timer = setTimeout(() => {
-      setIsExiting(true);
-      
-      // Allow exit animation to complete before calling onClose
-      const exitTimer = setTimeout(() => {
-        if (onClose) onClose();
-        setIsExiting(false);
-      }, 300); // Match transition duration
-      
-      return () => clearTimeout(exitTimer);
+      onClose();
     }, duration);
-    
+
     return () => clearTimeout(timer);
-  }, [isVisible, duration, onClose]);
+  }, [duration, onClose]);
 
-  // Map toast types to icons and styles
-  const toastConfig = {
-    success: {
-      icon: CheckCircle,
-      bgColor: 'bg-success/10',
-      borderColor: 'border-success',
-      textColor: 'text-success',
-      iconColor: 'text-success',
-      role: 'status',
-    },
-    error: {
-      icon: AlertCircle,
-      bgColor: 'bg-error/10',
-      borderColor: 'border-error',
-      textColor: 'text-error',
-      iconColor: 'text-error',
-      role: 'alert',
-    },
-    info: {
-      icon: Info,
-      bgColor: 'bg-info/10',
-      borderColor: 'border-info',
-      textColor: 'text-info',
-      iconColor: 'text-info',
-      role: 'status',
-    },
-    warning: {
-      icon: AlertTriangle,
-      bgColor: 'bg-warning/10',
-      borderColor: 'border-warning',
-      textColor: 'text-warning',
-      iconColor: 'text-warning',
-      role: 'alert',
-    },
-  };
-
-  const { icon: Icon, bgColor, borderColor, textColor, iconColor, role } = toastConfig[type];
-
-  if (!isVisible) return null;
+  const bgColor = {
+    success: 'bg-choco-brown',
+    error: 'bg-choco-redbtn',
+    info: 'bg-choco-brown2',
+  }[type];
 
   return (
-    <div
-      className={`
-        fixed bottom-4 right-4 z-50 max-w-md
-        flex items-center gap-3 p-4 rounded-lg shadow-lg
-        border-l-4 ${borderColor} ${bgColor}
-        transition-all duration-300
-        ${isExiting ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}
-        animate-slide-up
-      `}
-      role={role}
-      aria-live={type === 'error' || type === 'warning' ? 'assertive' : 'polite'}
-    >
-      <Icon className={`icon-md ${iconColor}`} aria-hidden="true" />
-      
-      <div className="flex-1">
-        <p className={`${textColor} font-medium`}>{message}</p>
+    <div className="fixed max-w-[90vw] bottom-4 right-4 z-50 animate-fade-in">
+      <div className={`${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3`}>
+        <span>{message}</span>
+        <button
+          onClick={onClose}
+          className="hover:bg-white/10 rounded-full p-1 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
       </div>
-      
-      <button
-        onClick={() => {
-          setIsExiting(true);
-          setTimeout(() => {
-            if (onClose) onClose();
-            setIsExiting(false);
-          }, 300);
-        }}
-        className={`
-          p-1 rounded-full hover:bg-black/10
-          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary
-          transition-colors
-        `}
-        aria-label="Close notification"
-      >
-        <X className="icon-sm" aria-hidden="true" />
-      </button>
     </div>
   );
 };
-
-export { Toast };

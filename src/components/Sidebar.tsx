@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed top-0 ${basePosition} w-[80%] max-w-[20rem] h-full bg-secondary transition-all duration-300 shadow-md ${opacityClass} z-50 flex flex-col`}
+        className={`fixed top-0 ${basePosition} w-[90%] max-w-[24rem] desktop:w-[20rem] h-full bg-secondary transition-all duration-300 shadow-md ${opacityClass} z-50 flex flex-col`}
         style={{ transform: `translateX(${isOpen ? '0' : side === 'left' ? '-100%' : '100%'})` }}
         role="dialog"
         aria-modal="true"

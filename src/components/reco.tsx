@@ -26,7 +26,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   };
 
   return (
-      <div className="m-auto flex flex-col bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full md:w-[48vw] max-w-[250px] aspect-[1/1.5]">
+      <div className="group m-auto flex flex-col bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full md:w-[48vw] max-w-[250px] aspect-[1/1.5]">
         {/* Product Image */}
         <div className="relative w-full aspect-square overflow-hidden bg-gray-100"> 
           {product.image_url ? (
@@ -46,7 +46,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
           
           {/* Quick add button (visible on hover) */}
           <button 
-            className="absolute bottom-2 right-2 bg-primary text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md hover:bg-primary-dark"
+            className="absolute bottom-2 right-2 bg-primary text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-50 duration-300 shadow-md hover:bg-primary-dark"
             onClick={handleSimpleAddToCart}
             aria-label="Quick add to cart"
           >

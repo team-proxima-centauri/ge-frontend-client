@@ -20,6 +20,7 @@ import {
   logout as apiLogout 
 } from '@/services/api';
 import useEmblaCarousel from 'embla-carousel-react';
+import { Toast } from '@/components/Toast';
 
 // We'll use the API CartItem type directly and extend it with our local properties
 interface LocalCartItem extends ApiCartItem {
@@ -62,6 +63,8 @@ export default function Home() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -205,17 +208,25 @@ export default function Home() {
   };
 
   const handleAddToCart = async (product: Product, quantity: number) => {
-    try {
-      // Use the product and quantity parameters to add the item to the cart using the API
-      await addItemToCart(product.id, quantity);
-      
-      // After adding to the cart, refresh cart data from the API
-      // This ensures our local state is in sync with the backend
-      await fetchCartData();
-      
-      console.log(`Added product ${product.name} (${quantity} units) to cart`);
-    } catch (error) {
-      console.error(`Error adding ${product.name} to cart:`, error);
+    if (!currentUser) {
+      setShowLoginModal(true);
+      return;
+    } else {
+      try {
+        await addItemToCart(product.id, quantity);
+        await fetchCartData();
+        
+        // Show success toast
+        setToastMessage(`Added ${product.name} to cart`);
+        setShowToast(true);
+        
+        console.log(`Added product ${product.name} (${quantity} units) to cart`);
+      } catch (error) {
+        console.error(`Error adding ${product.name} to cart:`, error);
+        // Show error toast
+        setToastMessage(`Failed to add ${product.name} to cart`);
+        setShowToast(true);
+      }
     }
   };
 
@@ -225,6 +236,7 @@ export default function Home() {
     } else {
       console.log('Proceeding to checkout with user:', currentUser);
       alert('Proceeding to checkout!');
+      router.push('/checkout');
     }
   };
 
@@ -268,7 +280,7 @@ export default function Home() {
         {/* Main Content Container with proper background */}
         <div className="bg-groceryease-bg min-h-screen pb-10">
           {/* Hero Section for Desktop */}
-          <div className="hidden desktop:block relative bg-secondary text-gray-800 py-12 mb-8">
+          <div className="hidden desktop:block relative bg-secondary text-gray-800 py-12 mb-8 z-0">
             <div className="max-w-7xl mx-auto px-8 grid grid-cols-2 gap-12 items-center">
               <div>
                 <h1 className="text-4xl font-bold mb-4">Welcome to GroceryEase</h1>
@@ -304,7 +316,7 @@ export default function Home() {
           
           {/* Seasonal Specials Section - More compact on mobile */}
           {products.length > 0 && (
-            <div className="px-6 pt-4 desktop:px-8 desktop:pt-8">
+            <div className="px-6 pt-4 desktop:px-8 desktop:pt-8 z-0">
               {/* Mobile version - more compact */}
               <div className="desktop:hidden m-auto bg-gradient-to-r from-secondary/40 to-secondary-light/30 w-auto max-w-full rounded-xl p-4 shadow-sm">
                 <div className="flex justify-between items-center mb-2">
@@ -347,7 +359,7 @@ export default function Home() {
           )}
 
           {/* Recently Purchased Section */}
-          <div className="p-6 pt-8 desktop:px-8 desktop:pt-12">
+          <div className="p-6 pt-8 desktop:px-8 desktop:pt-12 z-0">
             {/* Mobile header - more compact */}
             <div className="flex justify-between items-center mb-3 desktop:hidden">
               <h2 className="text-lg font-bold text-gray-800">Recently Purchased</h2>
@@ -508,7 +520,7 @@ export default function Home() {
           )}
 
           {/* Products Section */}
-          <div className="px-6 pt-4 flex flex-col pb-8 desktop:px-8 desktop:pt-12">
+          <div className="px-6 pt-4 flex flex-col pb-8 desktop:px-8 desktop:pt-12 overflow-hidden z-0">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl desktop:text-3xl font-bold text-primary-dark">Featured Products</h2>
               <div className="flex gap-2 desktop:hidden">
@@ -534,7 +546,7 @@ export default function Home() {
             </div>
             
             {/* Desktop grid layout for products */}
-            <div className="hidden desktop:grid desktop:grid-cols-4 wide:grid-cols-5 gap-6 mb-8">
+            <div className="hidden desktop:grid desktop:grid-cols-4 wide:grid-cols-5 mb-8">
               {products.slice(0, 8).map((product) => (
                 <div key={product.id} className="transform transition-all hover:scale-[1.02]">
                   <DisplayCard 
@@ -575,6 +587,15 @@ export default function Home() {
         <LoginModal 
           onLoginSuccess={handleLoginSuccess} 
           onClose={() => setShowLoginModal(false)} 
+        />
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type="success"
+          onClose={() => setShowToast(false)}
         />
       )}
     </div>

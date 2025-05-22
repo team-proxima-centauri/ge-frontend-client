@@ -1,9 +1,10 @@
 "use client";
 
 import { Header } from "@/components/Header";
-import { getCurrentUser, logout as apiLogout, User, CartItem as ApiCartItem } from "@/services/api";
-import { useState } from "react";
+import { getCurrentUser, logout as apiLogout, User, CartItem as ApiCartItem, getMyCart } from "@/services/api";
+import { useState, useEffect, useCallback } from "react";
 import { LoginModal } from "@/components/LoginModal";
+import { useRouter } from "next/navigation";
 
 interface CartItem {
   id: string;
@@ -25,7 +26,6 @@ interface CartItem {
 }
 
 const ClubPage = () => {
-    // No router needed for now
     const [currentUser, setCurrentUser] = useState<User | null>(getCurrentUser());
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [showFilters, setShowFilters] = useState(false);
@@ -33,6 +33,37 @@ const ClubPage = () => {
     const [selectedSort, setSelectedSort] = useState('name_asc');
     const [priceRange, setPriceRange] = useState({ min: 0, max: 100 });
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const router = useRouter();
+
+    // Add fetchUserCart function
+    const fetchUserCart = useCallback(async () => {
+        if (currentUser) {
+            try {
+                const cart = await getMyCart();
+                if (cart && cart.items) {
+                    // Map API cart items to local CartItem type
+                    const mappedItems = cart.items.map(item => ({
+                        ...item,
+                        isSelected: false,
+                        productDetails: {
+                            id: item.product_id,
+                            name: item.name,
+                            price: item.price,
+                            image_url: item.image_url
+                        }
+                    }));
+                    setCartItems(mappedItems);
+                }
+            } catch (cartError) {
+                console.error('Error fetching user cart:', cartError);
+            }
+        }
+    }, [currentUser]);
+
+    // Add useEffect to fetch cart when user changes
+    useEffect(() => {
+        fetchUserCart();
+    }, [fetchUserCart]);
 
     const handleLoginClick = () => {
         setShowLoginModal(true);
@@ -41,14 +72,14 @@ const ClubPage = () => {
     const handleLogoutClick = () => {
         apiLogout();
         setCurrentUser(null);
+        setCartItems([]); // Clear cart items on logout
     };
 
     const handleLoginSuccess = (loggedInUser: User) => {
         setCurrentUser(loggedInUser);
         setShowLoginModal(false);
+        fetchUserCart(); // Fetch cart after successful login
     };
-
-    
 
     const handleCheckout = () => {
         if (!currentUser) {
@@ -56,10 +87,10 @@ const ClubPage = () => {
         } else {
             console.log('Proceeding to checkout with user:', currentUser);
             alert('Proceeding to checkout!');
+      router.push('/checkout');
+
         }
     };
-
-    
 
     const updateQuantity = (itemId: string, newQuantity: number) => {
         if (newQuantity >= 1) {
@@ -97,13 +128,13 @@ const ClubPage = () => {
                 onSortChange={setSelectedSort}
                 onPriceRangeChange={setPriceRange}
             />
-            <div className="absolute w-[100vw] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center px-6 py-10 text-center">
+            <div className="flex flex-col items-center justify-center px-6 py-10 text-center">
                 {/* Tailwind Card Component for React + TypeScript */}
                 <div
-                className="w-[90vw] md:w-[430px] rounded-[20px] bg-gradient-to-tr from-primary-dark from-30% via-primary via-50% to-primary-dark to-70% p-[5px] overflow-hidden shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+                className="w-[90vw] max-w-[430px] rounded-[20px] bg-gradient-to-tr from-primary-dark from-30% via-primary via-50% to-primary-dark to-70% p-[5px] overflow-hidden shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
                 >
                 {/* Top Section */}
-                <div className="relative h-[150px] md:h-[200px] rounded-[15px] bg-gradient-to-r from-secondary to-accent-ivory flex items-start justify-between px-4 pt-2">
+                <div className="relative w-full aspect-video rounded-[15px] bg-gradient-to-r from-secondary to-accent-ivory flex items-start justify-between px-4 pt-2">
                     <h1 className="m-auto">Barcode here</h1>
                 </div>
 
@@ -129,9 +160,13 @@ const ClubPage = () => {
                 </div>
 
 
-                <div className="w-1/2 text-balance mt-4 px-2 py-8 text-center">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <div className="w-full desktop:w-1/2 text-balance mt-4 px-2 py-8 text-center">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco labori nisi ut aliquip ex ea commodo consequat.</p>
+
+                    <button onClick={() => router.push('/products')} className="bg-primary text-white px-4 py-2 rounded-md my-12">Use Voucher!</button>
                 </div>
+
+                
 
             </div>
 

@@ -16,6 +16,10 @@ import {
 import { Header } from '@/components/Header';
 import { LoginModal } from '@/components/LoginModal';
 import { ChevronRight, Filter, ArrowLeft } from 'lucide-react';
+import { Sidebar } from '@/components/Sidebar';
+import { DisplayCard } from '@/components/DisplayCard';
+import { Toast } from '@/components/Toast';
+import { useRouter } from 'next/navigation';
 
 // Product Categories data
 const productCategories = [
@@ -53,6 +57,9 @@ export default function ProductsPage() {
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [showFilters, setShowFilters] = useState(false); // Add back for Header component
   const [showLoginModal, setShowLoginModal] = useState(false); // For login modal
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -124,12 +131,19 @@ export default function ProductsPage() {
       const addedItem = await addItemToCart(product.id, quantity);
       if (addedItem) {
         await fetchUserCart(); // Refresh cart from backend
+
+        // Show success toast
+        setToastMessage(`Added ${product.name} to cart`);
+        setShowToast(true);
       } else {
         setError('Failed to add item to cart. Please try again.');
       }
     } catch (err) {
       console.error('Error adding item to cart:', err);
       setError('An error occurred while adding the item to your cart.');
+
+      setToastMessage(`Failed to add ${product.name} to cart`);
+      setShowToast(true);
     }
   };
 
@@ -138,6 +152,8 @@ export default function ProductsPage() {
       // Handle unauthenticated checkout
     } else {
       console.log('Proceeding to checkout with user:', currentUser);
+      router.push('/checkout');
+
     }
   };
 
@@ -206,7 +222,6 @@ export default function ProductsPage() {
         onLogoutClick={handleLogoutClick}
         onCheckout={handleCheckout}
         onUpdateQuantity={updateQuantity}
-        // Connect filter functionality properly to Header component
         onApplyFilters={() => {
           // Apply all filters
         }}
@@ -228,7 +243,7 @@ export default function ProductsPage() {
       {/* Desktop layout with sidebar and content */}
       <div className="desktop:flex pt-4">
         {/* Desktop Sidebar - Only visible on desktop */}
-        <aside className={`hidden ${sidebarVisible ? 'desktop:block' : ''} w-1/4 p-4 bg-white shadow-card rounded-lg mx-4 sticky top-24 max-h-screen overflow-y-auto`}>
+        <aside className={`hidden ${sidebarVisible ? 'desktop:block' : ''} sticky w-1/4 wide:w-[20%] p-4 bg-white shadow-xl border border-choco-primary/10  rounded-xl mx-4 top-24 h-[79vh] overflow-y-auto`}>
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold mb-4 text-primary">Categories</h2>
@@ -288,7 +303,7 @@ export default function ProductsPage() {
         
         {/* Collapsible sidebar toggle for desktop */}
         <button 
-          className="hidden desktop:block fixed left-4 bottom-4 p-3 rounded-full bg-primary text-white shadow-lg z-20 hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
+          className="hidden desktop:block fixed left-4 bottom-4 p-3 rounded-full bg-primary border border-white text-white shadow-lg z-20 hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
           onClick={() => setSidebarVisible(!sidebarVisible)}
           aria-label={sidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
         >
@@ -374,6 +389,15 @@ export default function ProductsPage() {
         <LoginModal
           onLoginSuccess={handleLoginSuccess}
           onClose={() => setShowLoginModal(false)}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type="success"
+          onClose={() => setShowToast(false)}
         />
       )}
     </div>
