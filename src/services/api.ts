@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://192.168.1.18:5000/api'; // Ensure this matches your backend port
+const API_BASE_URL = 'http://192.168.254.104:5000/api'; // Ensure this matches your backend port
 
 // Utility function to ensure price values are always properly processed as numbers
 // This handles the conversion from database values (including string representations) to proper JS numbers

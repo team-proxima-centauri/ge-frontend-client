@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { Product } from '@/services/api';
 import { ShoppingCart, Plus } from 'lucide-react';
+import Image from 'next/image';
 
 interface RecommendationCardProps {
   product: Product;
@@ -28,15 +28,15 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
   return (
       <div className="group m-auto flex flex-col bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-full md:w-[48vw] max-w-[250px] aspect-[1/1.5]">
         {/* Product Image */}
-        <div className="relative w-full aspect-square overflow-hidden bg-gray-100"> 
+        <div className="relative w-full aspect-square overflow-hidden bg-white"> 
           {product.image_url ? (
             <Image 
               src={product.image_url} 
               alt={product.name} 
               width={300}
               height={300}
-              style={{ objectFit: 'cover' }}
-              className="w-full h-full transition-transform duration-300 group-hover:scale-105" 
+              style={{ objectFit: 'contain' }}
+              className="w-full h-full p-2 transition-transform duration-300 group-hover:scale-105" 
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
@@ -69,7 +69,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({
           
           <div className="mt-1 flex items-end justify-between">
             <div>
-              <p className="text-lg font-semibold text-gray-900">${product.price.toFixed(2)}</p>
+              <p className="text-lg font-semibold text-gray-900">₱{product.price.toFixed(2)}</p>
               <p className="text-xs text-gray-500">{formatUnit(product.unit)}</p>
             </div>
             

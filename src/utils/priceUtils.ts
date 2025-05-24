@@ -25,15 +25,17 @@ export const ensurePrice = (price: unknown): number => {
 };
 
 /**
- * Formats a price value for display with proper decimal places
+ * Formats a price value for display with proper decimal places and PHP currency symbol
  * 
  * @param price - The price value to format
  * @param decimals - Number of decimal places (default: 2)
- * @returns Formatted price string with specified decimal places
+ * @param includeCurrency - Whether to include the PHP currency symbol (default: true)
+ * @returns Formatted price string with specified decimal places and PHP currency symbol
  */
-export const formatPrice = (price: unknown, decimals = 2): string => {
+export const formatPrice = (price: unknown, decimals = 2, includeCurrency = true): string => {
   const numPrice = ensurePrice(price);
-  return numPrice.toFixed(decimals);
+  const formattedPrice = numPrice.toFixed(decimals);
+  return includeCurrency ? `₱${formattedPrice}` : formattedPrice;
 };
 
 /**

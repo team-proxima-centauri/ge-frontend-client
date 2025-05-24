@@ -16,23 +16,22 @@ import {
 import { Header } from '@/components/Header';
 import { LoginModal } from '@/components/LoginModal';
 import { ChevronRight, Filter, ArrowLeft } from 'lucide-react';
-import { Sidebar } from '@/components/Sidebar';
-import { DisplayCard } from '@/components/DisplayCard';
 import { Toast } from '@/components/Toast';
 import { useRouter } from 'next/navigation';
 
 // Product Categories data
 const productCategories = [
   { id: 'all', name: 'All Categories' },
-  { id: 'fruits', name: 'Fruits & Vegetables' },
-  { id: 'meat', name: 'Meat & Seafood' },
-  { id: 'dairy', name: 'Dairy & Eggs' },
-  { id: 'bakery', name: 'Bakery' },
-  { id: 'pantry', name: 'Pantry Staples' },
-  { id: 'frozen', name: 'Frozen Foods' },
-  { id: 'beverages', name: 'Beverages' },
-  { id: 'snacks', name: 'Snacks & Sweets' },
-  { id: 'household', name: 'Household' },
+  { id: 'biscuits_cookies', name: 'Biscuits & Cookies' },
+  { id: 'chips_crisps', name: 'Chips & Crisps' },
+  { id: 'chocolate_candy', name: 'Chocolate & Candy' },
+  { id: 'condiments_spreads', name: 'Condiments & Spreads' },
+  { id: 'instant_noodles', name: 'Instant Noodles' },
+  { id: 'kids_drinks', name: 'Kids Drinks' },
+  { id: 'milk_dairy_alternatives', name: 'Milk & Dairy Alternatives' },
+  { id: 'rtd_coffee', name: 'Ready-to-Drink Coffee' },
+  { id: 'soda_sparkling', name: 'Soda & Sparkling Drinks' },
+  { id: 'specialty_snacks', name: 'Specialty Snacks' },
 ];
 
 // Sort options data
@@ -259,6 +258,7 @@ export default function ProductsPage() {
                         : 'hover:bg-accent-ivory hover:text-primary'}
                     `}
                   >
+
                     <span>{category.name}</span>
                     {selectedCategory === category.id && (
                       <ChevronRight className="ml-auto w-4 h-4" />

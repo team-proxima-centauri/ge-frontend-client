@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { User, CartItem } from '@/services/api';
 import { formatPrice } from '@/utils/priceUtils';
-import router from 'next/router';
 import { useRouter } from 'next/navigation';
 
 interface HeaderProps {
@@ -40,15 +39,16 @@ const NavMenu = [
 
 const productCategories = [
   { id: 'all', name: 'All Categories' },
-  { id: 'fruits', name: 'Fruits & Vegetables' },
-  { id: 'meat', name: 'Meat & Seafood' },
-  { id: 'dairy', name: 'Dairy & Eggs' },
-  { id: 'bakery', name: 'Bakery' },
-  { id: 'pantry', name: 'Pantry Staples' },
-  { id: 'frozen', name: 'Frozen Foods' },
-  { id: 'beverages', name: 'Beverages' },
-  { id: 'snacks', name: 'Snacks & Sweets' },
-  { id: 'household', name: 'Household' },
+  { id: 'biscuits_cookies', name: 'Biscuits & Cookies' },
+  { id: 'condiments_spreads', name: 'Condiments & Spreads' },
+  { id: 'chocolate_candy', name: 'Chocolate & Candy' },
+  { id: 'chips_crisps', name: 'Chips & Crisps' },
+  { id: 'instant_noodles', name: 'Instant Noodles' },
+  { id: 'milk_dairy_alternatives', name: 'Milk & Dairy Alternatives' },
+  { id: 'rtd_coffee', name: 'RTD Coffee' },
+  { id: 'specialty_snacks', name: 'Specialty Snacks' },
+  { id: 'soda_sparkling', name: 'Soda & Sparkling' },
+  { id: 'kids_drinks', name: 'Kids Drinks' },
 ];
 
 const sortOptions = [

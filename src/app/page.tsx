@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { RecommendationCard } from "@/components/reco";
-import { DisplayCard } from "@/components/DisplayCard";
+import { useState, useEffect, useCallback } from 'react';
+import { RecommendationCard } from '@/components/reco';
+import { DisplayCard } from '@/components/DisplayCard';
 import { LoginModal } from '@/components/LoginModal';
 import { Header } from '@/components/Header';
-import Image from 'next/image';
+import { CategoryIcon } from '@/components/CategoryIcons';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -35,15 +35,16 @@ interface Category {
 
 const productCategories: Category[] = [
   { id: 'all', name: 'All Categories' },
-  { id: 'fruits', name: 'Fruits & Vegetables' },
-  { id: 'meat', name: 'Meat & Seafood' },
-  { id: 'dairy', name: 'Dairy & Eggs' },
-  { id: 'bakery', name: 'Bakery' },
-  { id: 'pantry', name: 'Pantry Staples' },
-  { id: 'frozen', name: 'Frozen Foods' },
-  { id: 'beverages', name: 'Beverages' },
-  { id: 'snacks', name: 'Snacks & Sweets' },
-  { id: 'household', name: 'Household' },
+  { id: 'biscuits_cookies', name: 'Biscuits & Cookies' },
+  { id: 'chips_crisps', name: 'Chips & Crisps' },
+  { id: 'chocolate_candy', name: 'Chocolate & Candy' },
+  { id: 'condiments_spreads', name: 'Condiments & Spreads' },
+  { id: 'instant_noodles', name: 'Instant Noodles' },
+  { id: 'kids_drinks', name: 'Kids Drinks' },
+  { id: 'milk_dairy_alternatives', name: 'Milk & Dairy Alternatives' },
+  { id: 'rtd_coffee', name: 'Ready-to-Drink Coffee' },
+  { id: 'soda_sparkling', name: 'Soda & Sparkling Drinks' },
+  { id: 'specialty_snacks', name: 'Specialty Snacks' },
 ];
 
 export default function Home() {
@@ -292,22 +293,43 @@ export default function Home() {
               </div>
               <div className="relative h-80 rounded-lg overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-secondary/20 to-secondary-light/30"></div>
-                {/* Abstract grocery illustration */}
+                {/* Creative shopping illustration */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="grid grid-cols-3 gap-4 p-4 w-full h-full">
-                    {products.slice(0, 6).map((product, index) => (
-                      <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg flex items-center justify-center">
-                        {product.image_url && (
-                          <Image 
-                            src={product.image_url} 
-                            alt={product.name}
-                            width={80}
-                            height={80}
-                            className="object-cover"
-                          />
-                        )}
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {/* Shopping cart animation */}
+                    <div className="relative">
+                      {/* Shopping cart */}
+                      <div className="w-64 h-48 relative">
+                        {/* Cart body */}
+                        <div className="absolute bottom-0 w-56 h-32 bg-primary rounded-t-3xl rounded-b-lg shadow-lg transform -rotate-6 animate-pulse">
+                          {/* Cart handle */}
+                          <div className="absolute -right-6 top-6 w-12 h-12 border-8 border-primary rounded-full"></div>
+                          {/* Cart wheels */}
+                          <div className="absolute -bottom-3 left-6 w-6 h-6 bg-gray-700 rounded-full"></div>
+                          <div className="absolute -bottom-3 right-6 w-6 h-6 bg-gray-700 rounded-full"></div>
+                        </div>
+                        
+                        {/* Floating grocery items */}
+                        <div className="absolute top-0 left-4 w-16 h-16 bg-accent-green rounded-lg shadow-md transform rotate-12 animate-float-slow">
+                          {/* Grocery item icon */}
+                          <div className="absolute inset-0 flex items-center justify-center text-white text-2xl">🥕</div>
+                        </div>
+                        <div className="absolute top-4 right-8 w-14 h-14 bg-accent-ivory rounded-lg shadow-md transform -rotate-6 animate-float">
+                          {/* Grocery item icon */}
+                          <div className="absolute inset-0 flex items-center justify-center text-2xl">🍎</div>
+                        </div>
+                        <div className="absolute top-12 left-16 w-12 h-12 bg-secondary rounded-lg shadow-md transform rotate-3 animate-float-fast">
+                          {/* Grocery item icon */}
+                          <div className="absolute inset-0 flex items-center justify-center text-xl">🥖</div>
+                        </div>
                       </div>
-                    ))}
+                    </div>
+                    
+                    {/* Decorative elements */}
+                    <div className="absolute top-12 right-12 w-20 h-20 bg-accent-green/20 rounded-full animate-pulse-slow"></div>
+                    <div className="absolute bottom-16 left-16 w-16 h-16 bg-primary/20 rounded-full animate-pulse-fast"></div>
+                    <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-primary rounded-full animate-ping"></div>
+                    <div className="absolute bottom-1/3 right-1/3 w-3 h-3 bg-accent-green rounded-full animate-ping-slow"></div>
                   </div>
                 </div>
               </div>
@@ -477,17 +499,12 @@ export default function Home() {
               </div>
               
               {/* Desktop grid layout for categories */}
-              <div className="hidden desktop:grid desktop:grid-cols-6 gap-6 mb-8">
+              <div className="hidden desktop:grid desktop:grid-cols-5 gap-6 mb-8">
                 {productCategories.slice(1, productCategories.length).map((category) => ( 
                   <div key={category.id} className="mx-auto w-full">
                     <div className="bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-card-hover transition-all duration-300 cursor-pointer group h-full transform hover:scale-105">
-                      <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center bg-accent-green/10 group-hover:bg-accent-green/20 transition-colors">
-                          <span className="text-accent-green font-medium text-lg">{category.name.charAt(0)}</span>
-                        </div>
-                      </div>
-                      <div className="p-3 text-center">
-                        <h3 className="font-medium text-gray-800">{category.name}</h3>
+                      <div className="aspect-square bg-white relative overflow-hidden">
+                        <CategoryIcon category={category.id} className="w-full h-full" />
                       </div>
                     </div>
                   </div>
@@ -503,13 +520,8 @@ export default function Home() {
                       className="flex-[0_0_calc(50%-0.5rem)] sm:flex-[0_0_calc(33.333%-0.75rem)] md:flex-[0_0_calc(25%-0.75rem)] lg:flex-[0_0_calc(16.666%-0.75rem)] px-2 mx-auto"
                     >
                       <div className="bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
-                        <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center bg-accent-green/10 group-hover:bg-accent-green/20 transition-colors">
-                            <span className="text-accent-green font-medium text-lg">{category.name.charAt(0)}</span>
-                          </div>
-                        </div>
-                        <div className="p-3 text-center">
-                          <h3 className="font-medium text-gray-800">{category.name}</h3>
+                        <div className="aspect-square bg-white relative overflow-hidden">
+                          <CategoryIcon category={category.id} className="w-full h-full" />
                         </div>
                       </div>
                     </div>

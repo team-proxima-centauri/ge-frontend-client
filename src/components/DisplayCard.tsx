@@ -51,16 +51,16 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
         onMouseLeave={() => setIsSelected(false)}
       >
         {/* Product Image */}
-        <div className="relative w-full aspect-square overflow-hidden bg-gray-100"> 
+        <div className="relative w-full aspect-square overflow-hidden bg-white"> 
           {product.image_url ? (
             <Image 
               src={product.image_url} 
               alt={product.name} 
               width={300}
               height={300}
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'contain' }}
               className={`
-                w-full h-full transition-transform duration-300
+                w-full h-full p-2 transition-transform duration-300
                 ${isMobile ? 'active:scale-105' : 'group-hover:scale-105'}
               `}
             />
@@ -98,7 +98,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
           
           <div className="mt-1 flex items-end justify-between">
             <div>
-              <p className="text-lg font-semibold text-gray-900">${product.price.toFixed(2)}</p>
+              <p className="text-lg font-semibold text-gray-900">₱{product.price.toFixed(2)}</p>
               <p className="text-xs text-gray-500">{formatUnit(product.unit)}</p>
             </div>
             

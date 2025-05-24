@@ -57,18 +57,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         onKeyDown={handleKeyDown}
         tabIndex={0}
         role="button"
-        aria-label={`Product: ${product.name}, Price: $${product.price.toFixed(2)}`}
+        aria-label={`Product: ${product.name}, Price: ₱${product.price.toFixed(2)}`}
       >
         {/* Product Image */}
-        <div className="relative w-full aspect-square overflow-hidden bg-gray-100"> 
+        <div className="relative w-full aspect-square overflow-hidden bg-white"> 
           {product.image_url ? (
             <Image 
               src={product.image_url} 
               alt={`${product.name} product image`}
               width={300}
               height={300}
-              style={{ objectFit: 'cover' }}
-              className="w-full h-full transition-transform duration-300 hover:scale-105 active:scale-105"
+              style={{ objectFit: 'contain' }}
+              className="w-full h-full p-2 transition-transform duration-300 hover:scale-105 active:scale-105"
               priority={true}
             />
           ) : (
@@ -125,8 +125,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
           <div className="mt-1 flex items-end justify-between">
             <div>
               <p className="text-lg font-semibold text-gray-900">
-                <span aria-label={`Price: ${product.price.toFixed(2)} dollars`}>
-                  ${product.price.toFixed(2)}
+                <span aria-label={`Price: ${product.price.toFixed(2)} Philippine pesos`}>
+                  ₱{product.price.toFixed(2)}
                 </span>
               </p>
               <p className="text-xs text-gray-500">{formatUnit(product.unit)}</p>

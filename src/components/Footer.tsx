@@ -1,6 +1,6 @@
 'use client';
 
-import { Facebook, Instagram, Twitter, Mail, PhoneCall, Heart } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Mail, PhoneCall } from 'lucide-react';
 import Link from 'next/link';
 
 export const Footer = () => {

@@ -5,17 +5,8 @@ import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { User, getCurrentUser, isAuthenticated, logout as apiLogout, CartItem, getMyCart } from '@/services/api';
 import { useRouter } from 'next/navigation';
-import { UserIcon, ChevronRight, PanelLeft, ShoppingCart, Filter, HomeIcon, PackageIcon, Award, Info, X } from 'lucide-react';
+import { UserIcon, ChevronRight, ShoppingCart, X } from 'lucide-react';
 import { Divider } from '@/components/Divider';
-import Link from 'next/link';
-
-const NavMenu = [
-  { id: 1, name: "Dashboard", href: "/", icon: HomeIcon },
-  { id: 2, name: "Products", href: "/products", icon: PackageIcon },
-  { id: 3, name: "Group Order", href: "/group-order", icon: ShoppingCart },
-  { id: 4, name: "Club Member", href: "/club", icon: Award },
-  { id: 5, name: "About", href: "#", icon: Info },
-];
 
 const Profile = () => {
   const router = useRouter();
@@ -24,24 +15,24 @@ const Profile = () => {
   const [leftOpen, setLeftOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  
+
   // Modal states
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [emailData, setEmailData] = useState({
     newEmail: '',
-    password: ''
+    password: '',
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     setIsClient(true);
-    
+
     // Add event listener for Escape key to close sidebars
     const handleEscKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -49,7 +40,7 @@ const Profile = () => {
         if (rightOpen) setRightOpen(false);
       }
     };
-    
+
     window.addEventListener('keydown', handleEscKey);
     return () => window.removeEventListener('keydown', handleEscKey);
   }, [leftOpen, rightOpen]);
@@ -85,24 +76,19 @@ const Profile = () => {
     router.push('/');
   };
 
-  const handleCartToggle = () => {
-    setRightOpen(!rightOpen);
-  };
-
   const handleCheckout = () => {
     if (!currentUser) {
       // Handle unauthenticated checkout
     } else {
       console.log('Proceeding to checkout with user:', currentUser);
       router.push('/checkout');
-
     }
   };
 
   const updateQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity >= 1) {
-      setCartItems(items =>
-        items.map(item =>
+      setCartItems((items) =>
+        items.map((item) =>
           item.id === itemId ? { ...item, quantity: newQuantity } : item
         )
       );
@@ -130,9 +116,10 @@ const Profile = () => {
       setPasswordData({
         currentPassword: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
       });
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
       setError('Failed to update password. Please try again.');
     }
   };
@@ -147,9 +134,10 @@ const Profile = () => {
       setShowEmailModal(false);
       setEmailData({
         newEmail: '',
-        password: ''
+        password: '',
       });
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
       setError('Failed to update email. Please try again.');
     }
   };
@@ -167,7 +155,7 @@ const Profile = () => {
             <X className="w-6 h-6" />
           </button>
         </div>
-        
+
         <form onSubmit={handlePasswordSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -176,12 +164,14 @@ const Profile = () => {
             <input
               type="password"
               value={passwordData.currentPassword}
-              onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+              onChange={(e) =>
+                setPasswordData({ ...passwordData, currentPassword: e.target.value })
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               New Password
@@ -189,12 +179,14 @@ const Profile = () => {
             <input
               type="password"
               value={passwordData.newPassword}
-              onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+              onChange={(e) =>
+                setPasswordData({ ...passwordData, newPassword: e.target.value })
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Confirm New Password
@@ -202,7 +194,9 @@ const Profile = () => {
             <input
               type="password"
               value={passwordData.confirmPassword}
-              onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+              onChange={(e) =>
+                setPasswordData({ ...passwordData, confirmPassword: e.target.value })
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
               required
             />
@@ -244,7 +238,7 @@ const Profile = () => {
             <X className="w-6 h-6" />
           </button>
         </div>
-        
+
         <form onSubmit={handleEmailSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -253,12 +247,14 @@ const Profile = () => {
             <input
               type="email"
               value={emailData.newEmail}
-              onChange={(e) => setEmailData({...emailData, newEmail: e.target.value})}
+              onChange={(e) =>
+                setEmailData({ ...emailData, newEmail: e.target.value })
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Current Password
@@ -266,7 +262,9 @@ const Profile = () => {
             <input
               type="password"
               value={emailData.password}
-              onChange={(e) => setEmailData({...emailData, password: e.target.value})}
+              onChange={(e) =>
+                setEmailData({ ...emailData, password: e.target.value })
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
               required
             />
@@ -302,7 +300,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-groceryease-bg">
-      <Header 
+      <Header
         currentUser={currentUser}
         cartItems={cartItems}
         onLoginClick={handleLoginClick}
@@ -311,8 +309,8 @@ const Profile = () => {
         onUpdateQuantity={updateQuantity}
         onApplyFilters={() => {}}
         onResetFilters={() => {}}
-        selectedCategory="all"
-        selectedSort="name_asc"
+        selectedCategory='all'
+        selectedSort='name_asc'
         priceRange={{ min: 0, max: 100 }}
         showFilters={false}
         onShowFiltersChange={() => {}}
@@ -326,7 +324,7 @@ const Profile = () => {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-card p-6">
             <h1 className="text-2xl font-bold text-primary mb-6">Profile Settings</h1>
-            
+
             {/* Profile Information */}
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
@@ -334,8 +332,12 @@ const Profile = () => {
                   <UserIcon className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-primary">{currentUser?.name}</h2>
-                  <p className="text-groceryease-textSecondary">{currentUser?.email}</p>
+                  <h2 className="text-xl font-semibold text-primary">
+                    {currentUser?.name}
+                  </h2>
+                  <p className="text-groceryease-textSecondary">
+                    {currentUser?.email}
+                  </p>
                 </div>
               </div>
 
@@ -343,15 +345,17 @@ const Profile = () => {
 
               {/* Account Settings */}
               <div>
-                <h3 className="text-lg font-semibold text-primary mb-4">Account Settings</h3>
+                <h3 className="text-lg font-semibold text-primary mb-4">
+                  Account Settings
+                </h3>
                 <div className="space-y-4">
-                  <button 
+                  <button
                     onClick={() => setShowPasswordModal(true)}
                     className="w-full text-left px-4 py-3 rounded-lg hover:bg-accent-ivory transition-colors"
                   >
                     Change Password
                   </button>
-                  <button 
+                  <button
                     onClick={() => setShowEmailModal(true)}
                     className="w-full text-left px-4 py-3 rounded-lg hover:bg-accent-ivory transition-colors"
                   >
@@ -364,9 +368,13 @@ const Profile = () => {
 
               {/* Order History */}
               <div>
-                <h3 className="text-lg font-semibold text-primary mb-4">Order History</h3>
+                <h3 className="text-lg font-semibold text-primary mb-4">
+                  Order History
+                </h3>
                 <div className="bg-accent-ivory/50 rounded-lg p-4 text-center">
-                  <p className="text-groceryease-textSecondary">No orders found</p>
+                  <p className="text-groceryease-textSecondary">
+                    No orders found
+                  </p>
                 </div>
               </div>
             </div>
@@ -375,8 +383,8 @@ const Profile = () => {
       </main>
 
       {/* Cart Sidebar */}
-      <Sidebar 
-        isOpen={rightOpen} 
+      <Sidebar
+        isOpen={rightOpen}
         toggleSidebar={() => setRightOpen(!rightOpen)}
         side="right"
         aria-label="Shopping Cart"
@@ -391,7 +399,7 @@ const Profile = () => {
             <ChevronRight className="h-6 w-6" />
           </button>
         </div>
-        
+
         <div className="flex-1 overflow-auto">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
@@ -399,22 +407,28 @@ const Profile = () => {
                 <ShoppingCart className="h-8 w-8 text-primary" />
               </div>
               <p className="text-gray-700">Your cart is empty</p>
-              <p className="text-sm text-gray-500 mt-2">Add items to get started</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Add items to get started
+              </p>
             </div>
           ) : (
             <div className="divide-y divide-groceryease-border">
-              {cartItems.map(item => (
+              {cartItems.map((item) => (
                 <div key={item.id} className="p-4 flex justify-between items-center">
                   <div className="flex items-start">
                     <div className="w-12 h-12 bg-accent-ivory rounded flex-shrink-0 mr-3"></div>
                     <div>
                       <p className="font-medium text-gray-800">{item.name}</p>
-                      <p className="text-sm text-primary-dark">${item.price}</p>
+                      <p className="text-sm text-primary-dark">
+                        ${item.price}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <button 
-                      onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.id, Math.max(1, item.quantity - 1))
+                      }
                       className="w-6 h-6 flex items-center justify-center border border-groceryease-border rounded-l"
                     >
                       -
@@ -422,8 +436,10 @@ const Profile = () => {
                     <span className="w-8 h-6 flex items-center justify-center border-t border-b border-groceryease-border">
                       {item.quantity}
                     </span>
-                    <button 
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.id, item.quantity + 1)
+                      }
                       className="w-6 h-6 flex items-center justify-center border border-groceryease-border rounded-r"
                     >
                       +
@@ -434,13 +450,17 @@ const Profile = () => {
             </div>
           )}
         </div>
-        
+
         {cartItems.length > 0 && (
           <div className="p-4 border-t border-groceryease-border bg-accent-ivory/50">
             <div className="flex justify-between mb-4">
               <span className="font-medium">Total:</span>
               <span className="font-bold text-primary">
-                ${cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
+                ₱
+                {cartItems.reduce(
+                  (total, item) => total + item.price * item.quantity,
+                  0
+                ).toFixed(2)}
               </span>
             </div>
             <button
