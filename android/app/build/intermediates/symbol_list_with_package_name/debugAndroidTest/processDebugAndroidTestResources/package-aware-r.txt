@@ -1,0 +1,3 @@
+com.groceryease.choco.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme

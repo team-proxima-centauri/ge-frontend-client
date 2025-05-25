@@ -1,0 +1,2 @@
+com.groceryease.choco.test:style/WhiteBackgroundTheme = 0x7f010001
+com.groceryease.choco.test:style/WhiteBackgroundDialogTheme = 0x7f010000
