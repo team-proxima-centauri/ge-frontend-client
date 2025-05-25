@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Header } from "@/components/Header";
 import { getCurrentUser, logout as apiLogout, User, CartItem as ApiCartItem, getMyCart } from "@/services/api";

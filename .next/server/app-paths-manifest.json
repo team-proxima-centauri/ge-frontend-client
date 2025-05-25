@@ -1,8 +1,13 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/products/page": "app/products/page.js",
+  "/about/page": "app/about/page.js",
+  "/checkout/page": "app/checkout/page.js",
   "/club/page": "app/club/page.js",
   "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
   "/group-order/page": "app/group-order/page.js",
-  "/about/page": "app/about/page.js"
+  "/profile/page": "app/profile/page.js",
+  "/products/page": "app/products/page.js",
+  "/signup/page": "app/signup/page.js"
 }

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, FormEvent } from "react";
 import { Lock, Eye, EyeOff, Mail } from "lucide-react";

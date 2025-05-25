@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { Header } from "@/components/Header";
 import { getCurrentUser, User, CartItem as ApiCartItem, getMyCart } from "@/services/api";
 import { useRouter } from "next/navigation";
 import { formatPrice } from '@/utils/priceUtils';
-import { ShoppingCart, MapPin, Phone, CreditCard, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 interface CartItem {
   id: string;
@@ -35,7 +35,7 @@ interface Address {
 }
 
 export default function CheckoutPage() {
-  const [currentUser, setCurrentUser] = useState<User | null>(getCurrentUser());
+  const [currentUser] = useState<User | null>(getCurrentUser());
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [address, setAddress] = useState<Address>({
     street: '',
