@@ -132,7 +132,7 @@ const AboutPage = () => {
                 
             <h1 className="text-3xl font-bold text-primary text-center mb-8">About GroceryEase</h1>
         
-                <div className="space-y-8 text-left text-justify">
+                <div className="space-y-8 text-left text-justify desktop:w-1/2">
                     <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
                         <p className="text-gray-700 leading-relaxed">
                         GroceryEase is a mobile and web application developed as part of our thesis project to improve the online supermarket shopping experience. Created in collaboration with Choco Mart, a Korean grocery store known for offering authentic Korean products, our platform introduces smart features such as intelligent shopping lists, real-time order tracking, and group ordering options. These tools are designed to make grocery shopping more efficient, convenient, and user-friendly.

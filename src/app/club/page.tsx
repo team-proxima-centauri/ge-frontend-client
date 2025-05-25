@@ -159,12 +159,37 @@ const ClubPage = () => {
                 </div>
                 </div>
 
+                {/* For non members */}
+                <div className="w-full flex flex-col items-center justify-center desktop:w-1/2 text-left text-justify mt-4 px-2 py-8">
+                    <p>You’re one step closer to your reward!
+                    Keep shopping, scanning, and saving — your activity unlocks exclusive perks. 
+                    <br /> <br /> 
+                    Hit your metrics to activate your discount voucher and enjoy premium benefits as a valued VIP member.
+                    <br /> <br /> 
+                    The more you engage, the more you earn. Let’s get that voucher! 🎉</p>
 
-                <div className="w-full desktop:w-1/2 text-balance mt-4 px-2 py-8 text-center">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco labori nisi ut aliquip ex ea commodo consequat.</p>
+                    <button onClick={() => router.push('/products')} className="bg-primary text-white px-4 py-2 rounded-md my-12">View Products!</button>
+                </div>
+
+                {/* For members */}
+                {/* <div className="w-full flex flex-col items-center justify-center desktop:w-1/2 text-left text-justify mt-4 px-2 py-8">
+                    <p>You’ve earned it — now enjoy it! 🎁
+                    Your exclusive voucher is ready to use.</p>
+                    <br />
+
+                    <div className="flex flex-col gap-2 text-left">
+                        <p>How to redeem:</p>
+                        <p>• Shop your favorites online or in-store</p>
+                        <p>• Present your barcode at checkout</p>
+                        <p>• Your discount will be applied instantly!</p>
+                    </div>
+                    <br />
+
+
+                    <p>Thank you for being a valued VIP — we’re glad to have you with us. More perks await every time you shop!</p>
 
                     <button onClick={() => router.push('/products')} className="bg-primary text-white px-4 py-2 rounded-md my-12">Use Voucher!</button>
-                </div>
+                </div> */}
 
                 
 
