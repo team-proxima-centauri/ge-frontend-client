@@ -51,7 +51,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ product, onAddToCart }) => {
         onMouseLeave={() => setIsSelected(false)}
       >
         {/* Product Image */}
-        <div className="relative w-full aspect-square overflow-hidden bg-white"> 
+        <div className="relative w-full aspect-square overflow-hidden"> 
           {product.image_url ? (
             <Image 
               src={product.image_url} 

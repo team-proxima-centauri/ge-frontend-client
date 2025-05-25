@@ -34,7 +34,7 @@ const NavMenu = [
   { id: 2, name: "Products", href: "/products", icon: PackageIcon },
   { id: 3, name: "Group Order", href: "/group-order", icon: ShoppingCart },
   { id: 4, name: "Club Member", href: "/club", icon: Award },
-  { id: 5, name: "About", href: "#", icon: Info },
+  { id: 5, name: "About", href: "/about", icon: Info },
 ];
 
 const productCategories = [

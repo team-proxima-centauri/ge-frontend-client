@@ -501,7 +501,7 @@ export default function Home() {
               {/* Desktop grid layout for categories */}
               <div className="hidden desktop:grid desktop:grid-cols-5 gap-6 mb-8">
                 {productCategories.slice(1, productCategories.length).map((category) => ( 
-                  <div key={category.id} className="mx-auto w-full">
+                  <div key={category.id} className="mx-auto w-2/3">
                     <div className="bg-groceryease-surface rounded-xl overflow-hidden shadow-sm hover:shadow-card-hover transition-all duration-300 cursor-pointer group h-full transform hover:scale-105">
                       <div className="aspect-square bg-white relative overflow-hidden">
                         <CategoryIcon category={category.id} className="w-full h-full" />

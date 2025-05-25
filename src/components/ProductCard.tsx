@@ -60,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         aria-label={`Product: ${product.name}, Price: ₱${product.price.toFixed(2)}`}
       >
         {/* Product Image */}
-        <div className="relative w-full aspect-square overflow-hidden bg-white"> 
+        <div className="relative w-full aspect-square overflow-hidden"> 
           {product.image_url ? (
             <Image 
               src={product.image_url} 
